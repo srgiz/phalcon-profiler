@@ -1,0 +1,28 @@
+{
+  "name": "srgiz/phalcon-profiler",
+  "type": "library",
+  "keywords": ["phalcon", "profiler"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sergei Zubrilin",
+      "homepage": "https://github.com/srgiz"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "ext-phalcon": "^5.1",
+    "ext-yaml": "*",
+    "ext-zip": "*"
+  },
+  "require-dev": {
+    "phalcon/ide-stubs": "v5.1.4",
+    "vimeo/psalm": "^5.13"
+  },
+  "autoload": {
+    "psr-4": {
+      "Srgiz\\Phalcon\\WebProfiler\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}

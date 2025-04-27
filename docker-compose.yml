@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: profiler-nginx
+    restart: unless-stopped
+    image: nginx:1.25.0-alpine3.17
+    ports:
+      - "127.0.0.11:80:80"
+    volumes:
+      - ./docker/nginx/conf.d/blog.conf:/etc/nginx/conf.d/blog.conf
+      - ./:/var/www
+    depends_on:
+      - php
+
+  php:
+    container_name: profiler-php
+    restart: unless-stopped
+    image: srgiz/phalcon-profiler:latest
+    build:
+      context: docker/php
+    environment:
+      PS1: "\\u:\\w$$ "
+    volumes:
+      - ./docker/php/conf.d/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./:/var/www
+
+networks:
+  default:
+    name: web-profiler.local

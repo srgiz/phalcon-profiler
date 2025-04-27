@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="1"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    allowStringToStandInForClass="true"
+    reportMixedIssues="false"
+>
+    <stubs>
+        <file name="vendor/phalcon/ide-stubs/src/Config/ConfigInterface.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Di/AbstractInjectionAware.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Di/DiInterface.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Di/Injectable.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Logger/Adapter/AbstractAdapter.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Mvc/Router/Route.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Mvc/View/Simple.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Mvc/View/Engine/AbstractEngine.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Mvc/View/Engine/Volt.php" />
+        <file name="vendor/phalcon/ide-stubs/src/Mvc/View/Engine/Volt/Compiler.php" />
+    </stubs>
+    <projectFiles>
+        <directory name="src" />
+        <directory name="example" />
+        <ignoreFiles>
+            <directory name="config" />
+            <directory name="vendor" />
+            <directory name="example/app/config" />
+            <directory name="example/app/var" />
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <PossiblyInvalidMethodCall errorLevel="suppress" />
+        <MissingClosureReturnType errorLevel="suppress" />
+        <UndefinedInterfaceMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="Phalcon\Config\ConfigInterface::offsetGet" />
+            </errorLevel>
+        </UndefinedInterfaceMethod>
+        <UndefinedThisPropertyFetch>
+            <errorLevel type="suppress">
+                <referencedProperty name="Srgiz\Phalcon\WebProfiler\Controller\ProfilerController::$profilerManager" />
+            </errorLevel>
+        </UndefinedThisPropertyFetch>
+    </issueHandlers>
+</psalm>

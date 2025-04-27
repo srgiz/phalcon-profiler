@@ -1,0 +1,79 @@
+eventsManager:
+  className: Phalcon\Events\Manager
+  shared: true
+  calls:
+    - method: enablePriorities
+      arguments:
+        - { type: parameter, value: true }
+    - method: attach
+      arguments:
+        - { type: parameter, value: 'dispatch:beforeException' }
+        - { type: service, name: App\BeforeExceptionListener }
+
+router:
+  className: Phalcon\Mvc\Router\Annotations
+  shared: true
+  calls:
+    - method: addResource
+      arguments:
+        - { type: parameter, value: App\Controller\Index }
+        - { type: parameter, value: / }
+
+dispatcher:
+  className: Phalcon\Mvc\Dispatcher
+  shared: true
+  calls:
+    - method: setEventsManager
+      arguments:
+        - { type: service, name: eventsManager }
+
+view:
+  className: Phalcon\Mvc\View
+  shared: true
+  calls:
+    - method: setEventsManager
+      arguments:
+        - { type: service, name: eventsManager }
+    - method: setViewsDir
+      arguments:
+        - { type: parameter, value: !config application.viewsDir }
+    - method: registerEngines
+      arguments:
+        - type: parameter
+          value:
+            .volt: volt
+    - method: disableLevel
+      arguments:
+        - type: parameter
+          value:
+            2: true
+            3: true
+            4: true
+            5: true
+
+volt:
+  className: Phalcon\Mvc\View\Engine\Volt
+  shared: true
+  arguments:
+    - { type: service, name: view }
+  calls:
+    - method: setEventsManager
+      arguments:
+        - { type: service, name: eventsManager }
+    - method: setOptions
+      arguments:
+        - type: parameter
+          value:
+            path: !config application.viewsCachePath
+
+logger:
+  className: Phalcon\Logger\Logger
+  shared: true
+  arguments:
+    - { type: parameter, value: main }
+  calls:
+    - method: addAdapter
+      arguments:
+        - { type: parameter, value: profiler }
+        - { type: service, name: profilerLoggerAdapter }
+

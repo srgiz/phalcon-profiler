@@ -1,0 +1,22 @@
+:root {
+    --bs-heading-color: rgba(var(--bs-emphasis-color-rgb), 1);
+}
+
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1.2rem;
+}
+
+.navbar-nav .nav-link {
+    --bs-navbar-active-color: var(--bs-heading-color);
+}
+
+.block-break-all {
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.text-teal {
+    color: var(--bs-teal);
+}

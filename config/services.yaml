@@ -1,0 +1,107 @@
+profilerView:
+  className: Srgiz\Phalcon\WebProfiler\View\View
+  shared: true
+  calls:
+    - method: registerEngines
+      arguments:
+        - type: parameter
+          value:
+            .volt: profilerVolt
+
+profilerVolt:
+  className: Srgiz\Phalcon\WebProfiler\View\Volt
+  shared: true
+  arguments:
+    - { type: service, name: profilerView }
+  calls:
+    - method: setOptions
+      arguments:
+        - type: parameter
+          value:
+            path: !profilerConfig viewsCachePath
+    - method: setCompiler
+      arguments:
+        - { type: service, name: profilerVoltCompiler }
+
+profilerVoltCompiler:
+  className: Srgiz\Phalcon\WebProfiler\View\Compiler
+  shared: true
+  arguments:
+    - { type: service, name: profilerView }
+  calls:
+    - method: addFunction
+      arguments:
+        - { type: parameter, value: profiler_dump }
+        - { type: parameter, value: Srgiz\Phalcon\WebProfiler\View\Fn\DumpFn::execute }
+
+profilerAssets:
+  className: Srgiz\Phalcon\WebProfiler\Service\Assets
+  shared: true
+  arguments:
+    - { type: service, name: tag }
+
+profilerDump:
+  className: Phalcon\Support\Debug\Dump
+  shared: true
+  arguments:
+    - type: parameter
+      value:
+        pre: 'margin-bottom: 0'
+        other: ''
+        arr: 'color: var(--bs-emphasis-color)'
+        obj: 'color: var(--bs-emphasis-color)'
+        bool: 'color: var(--bs-warning)'
+        null: 'color: var(--bs-warning)'
+        float: 'color: var(--bs-info)'
+        int: 'color: var(--bs-info)'
+        num: 'color: var(--bs-info)'
+        str: 'color: var(--bs-teal)'
+        res: 'color: var(--bs-teal)'
+    - { type: parameter, value: true }
+
+profilerStopwatch:
+  className: Srgiz\Phalcon\WebProfiler\Service\Stopwatch
+  shared: true
+
+profilerDb:
+  className: Phalcon\Db\Profiler
+  shared: true
+
+profilerLoggerAdapter:
+  className: Srgiz\Phalcon\WebProfiler\Logger\ProfilerAdapter
+  shared: true
+  arguments:
+    - { type: service, name: eventsManager }
+
+profilerManager:
+  className: Srgiz\Phalcon\WebProfiler\Service\Manager
+  shared: true
+
+Srgiz\Phalcon\WebProfiler\Collector\RequestCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\RequestCollector
+  shared: true
+
+Srgiz\Phalcon\WebProfiler\Collector\PerformanceCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\PerformanceCollector
+  shared: true
+  arguments:
+    - { type: service, name: profilerStopwatch }
+
+Srgiz\Phalcon\WebProfiler\Collector\DbCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\DbCollector
+  shared: true
+  arguments:
+    - { type: service, name: profilerDb }
+
+Srgiz\Phalcon\WebProfiler\Collector\LoggerCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\LoggerCollector
+  shared: true
+
+Srgiz\Phalcon\WebProfiler\Collector\ExceptionCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\ExceptionCollector
+  shared: true
+
+Srgiz\Phalcon\WebProfiler\Collector\ViewCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\ViewCollector
+  shared: true
+
