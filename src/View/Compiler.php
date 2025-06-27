@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\View;
 
 /**
- * @property-read View view
+ * @property View view
  */
 class Compiler extends \Phalcon\Mvc\View\Engine\Volt\Compiler
 {
@@ -14,6 +15,6 @@ class Compiler extends \Phalcon\Mvc\View\Engine\Volt\Compiler
          * @psalm-suppress PossiblyNullReference
          * @psalm-suppress UndefinedInterfaceMethod
          */
-        return $this->view->preparePath((string)parent::getFinalPath($path));
+        return $this->view->preparePath((string) parent::getFinalPath($path));
     }
 }

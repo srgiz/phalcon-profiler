@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\View\Fn;
@@ -27,13 +28,13 @@ class DumpFn
         $str = '[';
 
         foreach ($data as $key => $value) {
-            $str .= "\n" . $offset . $tab . $this->dumpKey($key) . ' => '
-                . (is_array($value) ? $this->dump($value, $lvl + 1) : $this->dumpString($value) )
-                . ','
+            $str .= "\n".$offset.$tab.$this->dumpKey($key).' => '
+                .(is_array($value) ? $this->dump($value, $lvl + 1) : $this->dumpString($value))
+                .','
             ;
         }
 
-        return $str . "\n" . $offset . ']';
+        return $str."\n".$offset.']';
     }
 
     private function tab(int $lvl): string
@@ -54,16 +55,17 @@ class DumpFn
 
         if (is_int($str) || is_float($str)) {
             $color = 'var(--bs-info)';
-        } else if (is_bool($str) || is_null($str)) {
+        } elseif (is_bool($str) || is_null($str)) {
             $color = 'var(--bs-warning)';
         }
 
-        $result = sprintf('<span style="color: %s">%s</span>', $color, htmlspecialchars((string)$str));
+        $result = sprintf('<span style="color: %s">%s</span>', $color, htmlspecialchars((string) $str));
+
         return is_string($str) ? sprintf('"%s"', $result) : $result;
     }
 
     private function dumpKey(mixed $key): string
     {
-        return sprintf('"<span style="color: var(--bs-emphasis-color)">%s</span>"', htmlspecialchars((string)$key));
+        return sprintf('"<span style="color: var(--bs-emphasis-color)">%s</span>"', htmlspecialchars((string) $key));
     }
 }

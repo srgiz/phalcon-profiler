@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Logger;
@@ -11,7 +12,9 @@ class ProfilerAdapter extends AbstractAdapter
 {
     protected $defaultFormatter = ProfilerLineFormatter::class;
 
-    public function __construct(private ManagerInterface $eventsManager) {}
+    public function __construct(private ManagerInterface $eventsManager)
+    {
+    }
 
     public function process(Item $item): void
     {

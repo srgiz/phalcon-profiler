@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Service;
@@ -15,14 +16,15 @@ class Assets extends Manager
     {
         $path = $this->preparePath($path);
         $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $assetClass = '\Phalcon\Assets\Inline\\' . ucfirst($ext);
+        $assetClass = '\Phalcon\Assets\Inline\\'.ucfirst($ext);
         /** @var Inline $asset */
         $asset = new $assetClass(file_get_contents($path));
+
         return $this->outputInline((new Collection())->addInline($asset), 'js' === $ext ? 'script' : 'style');
     }
 
     private function preparePath(string $path): string
     {
-        return str_replace('@profiler', realpath(__DIR__ . '/../../'), $path);
+        return str_replace('@profiler', realpath(__DIR__.'/../../'), $path);
     }
 }

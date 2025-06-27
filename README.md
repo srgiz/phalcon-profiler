@@ -7,6 +7,8 @@
 * ext-yaml
 * ext-zip
 
+![screenshot.png](screenshot.png)
+
 ## Install
 
 Di:
@@ -157,11 +159,6 @@ class CustomCollector implements CollectorInterface
         return 'Custom';
     }
 
-    public function icon(): string
-    {
-        return '';
-    }
-
     public function collect(): array
     {
         return [
@@ -173,13 +170,9 @@ class CustomCollector implements CollectorInterface
 
 ```html
 {# custom.volt #}
-{% extends '@profiler/profiler.volt' %}
+{% extends '@profiler/data.volt' %}
 
 {% block panel %}
     Message: {{ message|e }}
 {% endblock %}
 ```
-
-## Screenshot
-
-![screenshot.png](screenshot.png)

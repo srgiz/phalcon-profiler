@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Logger;
@@ -25,7 +26,7 @@ class ProfilerLineFormatter extends Line
                 continue;
             }
 
-            $replace['%' . $key . '%'] = sprintf('<span style="font-weight: 600">%s</span>', htmlspecialchars((string)$value));
+            $replace['%'.$key.'%'] = sprintf('<span style="font-weight: 600">%s</span>', htmlspecialchars((string) $value));
         }
 
         return strtr($message, $replace);

@@ -15,5 +15,6 @@ return new Config([
         'collectors' => [
             CustomCollector::class,
         ],
+        //'excludeRoutes' => ['/404'],
     ],
 ]);

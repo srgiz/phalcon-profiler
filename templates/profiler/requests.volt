@@ -1,10 +1,10 @@
 {# profiler/requests #}
-{% extends '@profiler/page.volt' %}
+{% extends '@profiler/base.volt' %}
 
 {% block content %}
-    <h1>Requests</h1>
-    <div class="table-responsive">
-        <table class="table table-hover">
+    <h2 class="mt-4 mb-4">Requests</h2>
+    <div class="table-responsive card-shadow rounded-2 mb-4">
+        <table class="table table-hover table-striped-columns mb-0">
             <thead>
             <tr>
                 <th scope="col">Tag</th>
@@ -17,15 +17,15 @@
             <tbody>
             {% for tag, item in requests %}
                 <tr>
-                    {% set color = item['statusCode'] < 400 ? 'success' : (item['statusCode'] < 500 ? 'warning' : 'danger') %}
-                    <th scope="row">
-                        <a class="text-decoration-none" href="{{ url(['for': '_profiler-tag', 'tag': tag]) }}">{{ tag }}</a>
-                    </th>
+                    {% set color = item['statusCode'] < 400 ? 'success' : 'danger' %}
                     <td>
-                        <span class="badge text-bg-{{ color }}">{{ item['statusCode'] }}</span>
+                        <a class="text-decoration-none" href="{{ url(['for': '_profiler-tag', 'tag': tag]) }}">{{ tag }}</a>
+                    </td>
+                    <td>
+                        <span class="badge text-bg-{{ color }} align-text-bottom">{{ item['statusCode'] }}</span>
                     </td>
                     <td>{{ item['method'] }}</td>
-                    <td>{{ item['uri']|e }}</td>
+                    <td>{{ item['uri'] }}</td>
                     <td>{{ item['requestTime'].format('c') }}</td>
                 </tr>
             {% endfor %}

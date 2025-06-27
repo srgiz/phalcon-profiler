@@ -3,6 +3,7 @@ FROM php:8.0.29-fpm-alpine3.16
 RUN apk add --no-cache bash shadow linux-headers
 
 ENV PHALCON_VERSION=5.1.4
+ENV XDEBUG_VERSION=3.4.1
 
 RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
     && apk add --no-cache \
@@ -11,15 +12,20 @@ RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
         icu-dev \
         # zip:
         libzip-dev \
+        # postgres
+        libpq-dev \
     && docker-php-ext-install \
         opcache \
         intl \
         zip \
+        pdo_pgsql \
     && pecl install yaml-2.2.3 \
     && pecl install phalcon-$PHALCON_VERSION \
+    && pecl install xdebug-$XDEBUG_VERSION \
     && docker-php-ext-enable \
         yaml \
         phalcon \
+        xdebug \
     && apk del .phpize-deps
 
 # composer

@@ -1,3 +1,5 @@
 {# partials/footer #}
-{{ this.profilerAssets.outputInlineFile('@profiler/templates/assets/bootstrap.5.3.0.min.js') }}
-
+{% autoescape false %}
+    {{ this.profilerAssets.outputInlineFile('@profiler/templates/assets/bootstrap.bundle.min.5.3.7.js') }}
+    {{ this.profilerAssets.outputInlineFile('@profiler/templates/assets/bootstrap-color-mode.js') }}
+{% endautoescape %}

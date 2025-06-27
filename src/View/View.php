@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\View;
@@ -14,6 +15,6 @@ class View extends Simple
 
     public function preparePath(string $path): string
     {
-        return str_replace('@profiler', realpath(__DIR__ . '/../../templates'), $path);
+        return str_replace('@profiler', realpath(__DIR__.'/../../templates'), $path);
     }
 }

@@ -25,6 +25,17 @@ services:
       - ./docker/php/conf.d/php.ini:/usr/local/etc/php/conf.d/php.ini
       - ./:/var/www
 
+  postgres:
+    container_name: profiler-postgres
+    restart: unless-stopped
+    image: postgres:17.5-alpine3.22
+    #ports:
+    #  - "127.0.0.11:5432:5432"
+    environment:
+      POSTGRES_PASSWORD: root
+    #volumes:
+    #  - profiler-postgres:/var/lib/postgresql/data
+
 networks:
   default:
     name: web-profiler.local

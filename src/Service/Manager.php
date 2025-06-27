@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Service;
 
-use DateTimeInterface;
 use Phalcon\Config\ConfigInterface;
 use Phalcon\Di\AbstractInjectionAware;
 use Phalcon\Di\InjectionAwareInterface;
@@ -42,7 +42,7 @@ class Manager extends AbstractInjectionAware
     public function bar(string $tag): array
     {
         return [
-            '_meta' => (new DataReader($this->config()['tagsDir'] . '/' . $tag))->read('_meta'),
+            '_meta' => (new DataReader($this->config()['tagsDir'].'/'.$tag))->read('_meta'),
             '_tag' => $tag,
         ];
     }
@@ -58,7 +58,7 @@ class Manager extends AbstractInjectionAware
                 continue;
             }
 
-            $data[$tag] = (new DataReader($dir . '/' . $tag))->read('_meta');
+            $data[$tag] = (new DataReader($dir.'/'.$tag))->read('_meta');
         }
 
         return $data;
@@ -71,11 +71,11 @@ class Manager extends AbstractInjectionAware
         $panel = $collector->name();
         $dir = $this->config()['tagsDir'];
 
-        if ('last' === $tag) {
+        if ('latest' === $tag) {
             $tag = scandir($dir, SCANDIR_SORT_DESCENDING)[0];
         }
 
-        $archive = new DataReader($dir . '/' . $tag);
+        $archive = new DataReader($dir.'/'.$tag);
 
         return array_merge($archive->read($panel), [
             '_meta' => $archive->read('_meta'),
@@ -85,7 +85,7 @@ class Manager extends AbstractInjectionAware
         ]);
     }
 
-    public function save(string $tag, DateTimeInterface $requestTime, InjectionAwareInterface $app, ResponseInterface $response): void
+    public function save(string $tag, \DateTimeInterface $requestTime, InjectionAwareInterface $app, ResponseInterface $response): void
     {
         $dir = $this->config()['tagsDir'];
 
@@ -93,10 +93,15 @@ class Manager extends AbstractInjectionAware
             mkdir($dir, 0755, true);
         }
 
-        $archive = new DataWriter($dir . '/' . $tag);
+        $archive = new DataWriter($dir.'/'.$tag);
+        $metaCollectors = [];
 
         foreach ($this->collectors() as $collector) {
-            $archive->add($collector->name(), $collector->collect());
+            $archive->add($collector->name(), $data = $collector->collect());
+
+            if (isset($data['meta'])) {
+                $metaCollectors[$collector->name()] = $data['meta'];
+            }
         }
 
         /**
@@ -116,6 +121,7 @@ class Manager extends AbstractInjectionAware
             'executionTime' => $stopwatch->final(false),
             'peakMemoryUsage' => memory_get_peak_usage(true) / 1024 / 1024,
             'route' => !$route ? null : sprintf('%s [%s]', $route->getName(), $route->getRouteId()),
+            'collectors' => $metaCollectors,
         ]);
     }
 }

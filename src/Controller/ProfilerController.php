@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Controller;
@@ -10,7 +11,7 @@ use Srgiz\Phalcon\WebProfiler\Service\Manager;
 use Srgiz\Phalcon\WebProfiler\View\View;
 
 /**
- * @property-read Manager profilerManager
+ * @property Manager profilerManager
  */
 class ProfilerController extends Controller
 {
@@ -23,6 +24,7 @@ class ProfilerController extends Controller
     {
         $panel = $this->request->get('panel', null, '');
         $data = $this->profilerManager->data($tag, $panel);
+
         return $this->render($data['_templatePath'], $data);
     }
 
@@ -39,6 +41,7 @@ class ProfilerController extends Controller
     {
         /** @var View $view */
         $view = $this->getDI()->getShared('profilerView');
+
         return new Response($view->render($view->preparePath($path), $params));
     }
 }

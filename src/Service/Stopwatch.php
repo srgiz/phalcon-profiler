@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Service;
@@ -51,6 +52,7 @@ class Stopwatch
 
     /**
      * @internal
+     *
      * @return array<string, Event[]>
      */
     public function events(): array

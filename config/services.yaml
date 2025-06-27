@@ -1,3 +1,7 @@
+profilerVersion:
+  className: Srgiz\Phalcon\WebProfiler\Service\Version
+  shared: true
+
 profilerView:
   className: Srgiz\Phalcon\WebProfiler\View\View
   shared: true
@@ -19,6 +23,7 @@ profilerVolt:
         - type: parameter
           value:
             path: !profilerConfig viewsCachePath
+            autoescape: true
     - method: setCompiler
       arguments:
         - { type: service, name: profilerVoltCompiler }
@@ -33,6 +38,10 @@ profilerVoltCompiler:
       arguments:
         - { type: parameter, value: profiler_dump }
         - { type: parameter, value: Srgiz\Phalcon\WebProfiler\View\Fn\DumpFn::execute }
+    - method: addFunction
+      arguments:
+        - { type: parameter, value: method_exists }
+        - { type: parameter, value: Srgiz\Phalcon\WebProfiler\View\Fn\MethodExistsFn::execute }
 
 profilerAssets:
   className: Srgiz\Phalcon\WebProfiler\Service\Assets
@@ -87,8 +96,8 @@ Srgiz\Phalcon\WebProfiler\Collector\PerformanceCollector:
   arguments:
     - { type: service, name: profilerStopwatch }
 
-Srgiz\Phalcon\WebProfiler\Collector\DbCollector:
-  className: Srgiz\Phalcon\WebProfiler\Collector\DbCollector
+Srgiz\Phalcon\WebProfiler\Collector\DatabaseCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\DatabaseCollector
   shared: true
   arguments:
     - { type: service, name: profilerDb }
@@ -101,7 +110,12 @@ Srgiz\Phalcon\WebProfiler\Collector\ExceptionCollector:
   className: Srgiz\Phalcon\WebProfiler\Collector\ExceptionCollector
   shared: true
 
-Srgiz\Phalcon\WebProfiler\Collector\ViewCollector:
-  className: Srgiz\Phalcon\WebProfiler\Collector\ViewCollector
+Srgiz\Phalcon\WebProfiler\Collector\RoutingCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\RoutingCollector
   shared: true
+  arguments:
+    - { type: service, name: router }
 
+Srgiz\Phalcon\WebProfiler\Collector\VoltCollector:
+  className: Srgiz\Phalcon\WebProfiler\Collector\VoltCollector
+  shared: true

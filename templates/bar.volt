@@ -4,7 +4,7 @@
     <div style="display: flex; justify-content: space-between; font-size: 1rem; line-height: 2.25rem">
         <div style="display: flex; margin-right: {{ gutter*2 }}rem">
             <span style="padding: 0 {{ gutter }}rem; font-weight: 600; background: {{ _meta['statusCode'] < 400 ? '#198754' : (_meta['statusCode'] < 500 ? '#fd7e14' : '#dc3545') }}">{{ _meta['statusCode'] }}</span>
-            <span style="margin-left: {{ gutter }}rem"><span style="color: #adb5bd">Route:</span> {{ _meta['route']|e }}</span>
+            <span style="margin-left: {{ gutter }}rem"><span style="color: #adb5bd">Route:</span> {{ _meta['route'] }}</span>
             <span style="margin-left: {{ gutter*2 }}rem">{{ _meta['executionTime'] }}&nbsp;<span style="color: #adb5bd">ms</span></span>
             <span style="margin-left: {{ gutter*2 }}rem">{{ '%.2F'|format(_meta['peakMemoryUsage']) }}&nbsp;<span style="color: #adb5bd">MiB</span></span>
         </div>

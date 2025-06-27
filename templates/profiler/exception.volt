@@ -1,18 +1,23 @@
 {# profiler/exception #}
-{% extends '@profiler/profiler.volt' %}
+{% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h1>Exception</h1>
+    <h2 class="mb-3">Exception</h2>
     {% if trace is empty %}
-        <div class="border text-center p-2">none</div>
+        <div class="card{# border border-dashed#}">
+            <div class="card-body text-center pt-2 pb-2">none</div>
+        </div>
     {% else %}
-        <table class="table border">
-            <thead class="table-active">
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+        <table class="table table-hover card-shadow">
+            <thead>
             <tr>
                 <th scope="col" class="block-break-all text-light-emphasis">
                     <code class="text-body">
-                        <span class="text-light-emphasis fs-5">{{ class|e }}</span>
-                        <span class="d-block fw-normal">{{ file|e }}:{{ line|e }}</span>
+                        <span class="text-light-emphasis fs-5">{{ class }}</span>
+                        <span class="d-block fw-normal">{{ file }}:{{ line }}</span>
                     </code>
                 </th>
             </tr>
@@ -23,13 +28,13 @@
                     <td class="block-break-all">
                         {% if item['function'] is defined %}
                             <code class="text-body">
-                                {% if item['class'] is defined %}<span class="text-info">{{ item['class']|e }}</span>::{% endif %}<span class="text-warning">{{ item['function']|e }}</span>
+                                {% if item['class'] is defined %}<span class="text-info">{{ item['class'] }}</span>::{% endif %}<span class="text-warning">{{ item['function'] }}</span>
                             </code>
                         {% endif %}
 
                         {% if item['file'] is defined %}
                             <code class="d-block text-body">
-                                {{ item['file']|e }}{% if item['line'] is defined %}:{{ item['line']|e }}{% endif %}
+                                {{ item['file'] }}{% if item['line'] is defined %}:{{ item['line'] }}{% endif %}
                             </code>
                         {% endif %}
                     </td>

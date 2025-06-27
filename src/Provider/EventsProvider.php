@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Provider;
@@ -23,6 +24,8 @@ class EventsProvider implements ServiceProviderInterface
 
     private bool $isResolved = false;
 
+    private array $excludeRoutes = [];
+
     public function __construct()
     {
         $this->requestTime = new \DateTimeImmutable();
@@ -33,6 +36,13 @@ class EventsProvider implements ServiceProviderInterface
     {
         /** @var Di $di */
         $di->getInternalEventsManager()->attach('di:afterServiceResolve', $this);
+    }
+
+    public function setExcludeRoutes(array $routes): self
+    {
+        $this->excludeRoutes = $routes;
+
+        return $this;
     }
 
     public function afterServiceResolve(EventInterface $event, DiInterface $di, array $data): void
@@ -58,19 +68,21 @@ class EventsProvider implements ServiceProviderInterface
             ['application:beforeHandleRequest', Collector\PerformanceCollector::class],
             ['dispatch:beforeDispatch', Collector\PerformanceCollector::class, 1024],
             ['dispatch:afterBinding', Collector\PerformanceCollector::class, 1024],
+            ['dispatch:beforeExecuteRoute', Collector\PerformanceCollector::class, 1024],
+            ['dispatch:afterExecuteRoute', Collector\PerformanceCollector::class, 1024],
             ['db:beforeQuery', Collector\PerformanceCollector::class],
             ['db:afterQuery', Collector\PerformanceCollector::class],
             ['view:beforeCompile', Collector\PerformanceCollector::class],
             ['view:afterCompile', Collector\PerformanceCollector::class],
             // db
-            ['db:beforeQuery', Collector\DbCollector::class],
-            ['db:afterQuery', Collector\DbCollector::class],
+            ['db:beforeQuery', Collector\DatabaseCollector::class],
+            ['db:afterQuery', Collector\DatabaseCollector::class],
             // logger
             ['profiler:log', Collector\LogsCollector::class],
             // exception
             ['dispatch:beforeException', Collector\ExceptionCollector::class, 1024],
             // view
-            ['view:afterCompile', Collector\ViewCollector::class],
+            ['view:afterCompile', Collector\VoltCollector::class],
         ];
 
         foreach ($events as $event) {
@@ -82,6 +94,7 @@ class EventsProvider implements ServiceProviderInterface
     public function beforeRender(EventInterface $event, ViewBaseInterface $view): bool
     {
         $view->setVar('_profilerTag', $this->profilerTag);
+
         return true;
     }
 
@@ -90,7 +103,10 @@ class EventsProvider implements ServiceProviderInterface
         /** @var RouterInterface $router */
         $router = $app->getDI()->getShared('router');
 
-        if (str_starts_with(strval($router->getMatchedRoute()?->getName()), '_profiler')) {
+        if (
+            str_starts_with(strval($router->getMatchedRoute()?->getName()), '_profiler')
+            || in_array($app->getDI()->getShared('request')->getURI(true), $this->excludeRoutes, true)
+        ) {
             return;
         }
 

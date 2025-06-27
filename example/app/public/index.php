@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 use Phalcon\Autoload\Loader;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Application;
@@ -13,7 +16,7 @@ set_error_handler(function (int $errno, string $message, string $file, int $line
     switch ($errno) {
         case E_NOTICE:
         case E_WARNING:
-            throw new \ErrorException(message: $message, severity: $errno, filename: $file, line: $line);
+            throw new ErrorException(message: $message, severity: $errno, filename: $file, line: $line);
     }
 
     return false;
@@ -23,24 +26,24 @@ $rootPath = dirname(__DIR__);
 
 (new Loader())
     ->setNamespaces([
-        'App' => $rootPath . '/src',
-        'Srgiz\Phalcon\WebProfiler' => realpath(__DIR__ . '/../../../src'),
+        'App' => $rootPath.'/src',
+        'Srgiz\Phalcon\WebProfiler' => realpath(__DIR__.'/../../../src'),
     ])
     ->register()
 ;
 
 try {
     $container = new FactoryDefault();
-    $config = require_once $rootPath . '/config/config.php';
+    $config = require_once $rootPath.'/config/config.php';
 
     $container->setShared('config', function () use ($config) {
         return $config;
     });
 
-    $container->loadFromYaml($rootPath . '/config/services.yaml', [
+    $container->loadFromYaml($rootPath.'/config/services.yaml', [
         '!rootPath' => static function (string $filePath) use ($rootPath) {
             // https://www.php.net/manual/en/yaml.callbacks.parse.php
-            return $rootPath . $filePath;
+            return $rootPath.$filePath;
         },
         '!config' => function (string $path) use ($config) {
             return $config->path($path);
@@ -58,6 +61,6 @@ try {
 
     /** @psalm-suppress PossiblyUndefinedArrayOffset */
     $application->handle($_SERVER['REQUEST_URI'])->send();
-} catch (\Throwable $e) {
+} catch (Throwable $e) {
     (new Debug())->onUncaughtException($e);
 }

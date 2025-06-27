@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Collector;
@@ -15,25 +16,23 @@ class PerformanceCollector implements CollectorInterface
 {
     private float $maxScale = 0;
 
-    public function __construct(private Stopwatch $stopwatch) {}
+    public function __construct(private Stopwatch $stopwatch)
+    {
+    }
 
     public function templatePath(): string
     {
         return '@profiler/profiler/performance';
     }
 
+    public function menuPath(): ?string
+    {
+        return '@profiler/profiler/performance.menu';
+    }
+
     public function name(): string
     {
         return 'Performance';
-    }
-
-    public function icon(): string
-    {
-        return <<<HTML
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
-    <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
-</svg>
-HTML;
     }
 
     public function collect(): array
@@ -51,13 +50,13 @@ HTML;
                 $maxMemory = max($maxMemory, $event->memory);
             }
 
-            $dataset['label'] = $name . ': ' . $sumDuration . ' ms / ' . sprintf('%.2F MiB', $maxMemory);
+            $dataset['label'] = $name.': '.$sumDuration.' ms / '.sprintf('%.2F MiB', $maxMemory);
             $data['datasets'][] = $dataset;
         }
 
         return [
             'data' => $data,
-            'maxScale' => $this->maxScale,
+            'meta' => ['max' => $this->maxScale],
         ];
     }
 
@@ -68,31 +67,50 @@ HTML;
 
     public function boot(EventInterface $event, InjectionAwareInterface $app): bool
     {
-        $this->stopwatch->start('router');
+        $this->stopwatch->start('request'); // before router
+
         return true;
     }
 
     public function beforeHandleRequest(EventInterface $event, InjectionAwareInterface $app): bool
     {
-        $this->stopwatch->stop('router');
+        $this->stopwatch->stop('request'); // after router
+
         return true;
     }
 
     public function beforeDispatch(EventInterface $event, DispatcherInterface $dispatcher): bool
     {
-        $this->stopwatch->start('dispatch');
+        $this->stopwatch->start('request'); // before dispatch
+
         return true;
     }
 
     public function afterBinding(EventInterface $event, DispatcherInterface $dispatcher): bool
     {
-        $this->stopwatch->stop('dispatch');
+        $this->stopwatch->stop('request'); // after dispatch
+
+        return true;
+    }
+
+    public function beforeExecuteRoute(EventInterface $event, DispatcherInterface $dispatcher): bool
+    {
+        $this->stopwatch->start('controller');
+
+        return true;
+    }
+
+    public function afterExecuteRoute(EventInterface $event, DispatcherInterface $dispatcher): bool
+    {
+        $this->stopwatch->stop('controller');
+
         return true;
     }
 
     public function beforeQuery(EventInterface $event, AdapterInterface $conn): bool
     {
         $this->stopwatch->start('db');
+
         return true;
     }
 
@@ -104,12 +122,14 @@ HTML;
     public function beforeCompile(EventInterface $event, EngineInterface $engine): bool
     {
         $this->stopwatch->start('view');
+
         return true;
     }
 
     public function afterCompile(EventInterface $event, EngineInterface $engine): bool
     {
         $this->stopwatch->stop('view');
+
         return true;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Provider;
@@ -17,7 +18,9 @@ class RouterProvider implements ServiceProviderInterface
 {
     private bool $isResolved = false;
 
-    public function __construct(private string $routePrefix) {}
+    public function __construct(private string $routePrefix)
+    {
+    }
 
     public function register(DiInterface $di): void
     {
@@ -41,11 +44,11 @@ class RouterProvider implements ServiceProviderInterface
                 'controller' => ProfilerController::class,
                 'action' => 'indexAction',
             ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler'),
-            (new Route($this->routePrefix . '/tag/{tag}', [
+            (new Route($this->routePrefix.'/tag/{tag}', [
                 'controller' => ProfilerController::class,
                 'action' => 'tagAction',
             ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-tag'),
-            (new Route($this->routePrefix . '/bar/{tag}', [
+            (new Route($this->routePrefix.'/bar/{tag}', [
                 'controller' => ProfilerController::class,
                 'action' => 'barAction',
             ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-bar'),
@@ -70,7 +73,8 @@ class RouterProvider implements ServiceProviderInterface
             }
 
             // 'indexAction' => 'index'
-            $route->setProfilerAction(str_replace($dispatcher->getActionSuffix(), '', (string)$paths['action']));
+            $route->setProfilerAction(str_replace($dispatcher->getActionSuffix(), '', (string) $paths['action']));
+
             return true;
         };
     }

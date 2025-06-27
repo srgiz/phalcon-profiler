@@ -13,6 +13,8 @@ eventsManager:
 router:
   className: Phalcon\Mvc\Router\Annotations
   shared: true
+  arguments:
+    - { type: parameter, value: false }
   calls:
     - method: addResource
       arguments:
@@ -77,3 +79,16 @@ logger:
         - { type: parameter, value: profiler }
         - { type: service, name: profilerLoggerAdapter }
 
+db:
+  className: Phalcon\Db\Adapter\Pdo\Postgresql
+  arguments:
+    - type: parameter
+      value:
+        host: postgres
+        username: postgres
+        password: root
+        dbname: postgres
+  calls:
+    - method: setEventsManager
+      arguments:
+        - { type: service, name: eventsManager }

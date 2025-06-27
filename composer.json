@@ -1,7 +1,7 @@
 {
   "name": "srgiz/phalcon-profiler",
   "type": "library",
-  "keywords": ["phalcon", "profiler"],
+  "keywords": ["phalcon", "profiler", "webprofiler", "debug", "debugbar"],
   "license": "MIT",
   "authors": [
     {
@@ -17,12 +17,28 @@
   },
   "require-dev": {
     "phalcon/ide-stubs": "v5.1.4",
-    "vimeo/psalm": "^5.13"
+    "vimeo/psalm": "^5.13",
+    "friendsofphp/php-cs-fixer": "^3.75"
   },
   "autoload": {
     "psr-4": {
       "Srgiz\\Phalcon\\WebProfiler\\": "src/"
     }
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "scripts": {
+    "cs-fixer": [
+      "vendor/bin/php-cs-fixer fix"
+    ],
+    "dry-cs-fixer": [
+      "vendor/bin/php-cs-fixer fix --dry-run --diff"
+    ],
+    "psalm": [
+      "vendor/bin/psalm --no-cache"
+    ],
+    "quality": [
+      "@cs-fixer",
+      "@psalm"
+    ]
+  }
 }
