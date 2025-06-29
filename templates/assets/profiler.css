@@ -48,6 +48,10 @@
     --bs-info-text-emphasis: #3bd2fc;
 }
 
+a {
+    text-decoration: none;
+}
+
 .text-bg-warning {
     color: var(--bs-tertiary-bg) !important;
 }

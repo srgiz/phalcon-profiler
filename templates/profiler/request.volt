@@ -26,7 +26,9 @@
                     <div class="d-flex justify-content-center">
                         <div>
                             <div class="card-title fw-medium text-muted">PHP version</div>
-                            <div class="card-text text-light-emphasis fs-5">{{ this.profilerVersion.php() }}</div>
+                            <div class="card-text text-light-emphasis fs-5">
+                                <a href="{{ url(['for': '_profiler-phpinfo']) }}" class="stretched-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="phpinfo">{{ this.profilerVersion.php() }}</a>
+                            </div>
                         </div>
                         <div class="ms-3">
                             <div class="icon-box bg-success-subtle text-success">

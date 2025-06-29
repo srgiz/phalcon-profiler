@@ -52,6 +52,10 @@ class RouterProvider implements ServiceProviderInterface
                 'controller' => ProfilerController::class,
                 'action' => 'barAction',
             ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-bar'),
+            (new Route($this->routePrefix.'/phpinfo', [
+                'controller' => ProfilerController::class,
+                'action' => 'phpinfoAction',
+            ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-phpinfo'),
         ];
 
         foreach ($routes as $route) {

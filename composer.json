@@ -27,6 +27,9 @@
   },
   "minimum-stability": "dev",
   "scripts": {
+    "example-clear-cache": [
+      "rm -rf example/app/var/cache/volt/*.php"
+    ],
     "cs-fixer": [
       "vendor/bin/php-cs-fixer fix"
     ],
@@ -37,6 +40,7 @@
       "vendor/bin/psalm --no-cache"
     ],
     "quality": [
+      "@example-clear-cache",
       "@cs-fixer",
       "@psalm"
     ]

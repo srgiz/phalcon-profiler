@@ -44,4 +44,12 @@ class ProfilerController extends Controller
 
         return new Response($view->render($view->preparePath($path), $params));
     }
+
+    public function phpinfoAction(): ResponseInterface
+    {
+        ob_start();
+        phpinfo();
+
+        return new Response(ob_get_clean());
+    }
 }

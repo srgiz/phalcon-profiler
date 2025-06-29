@@ -41,7 +41,7 @@ profilerVoltCompiler:
     - method: addFunction
       arguments:
         - { type: parameter, value: method_exists }
-        - { type: parameter, value: Srgiz\Phalcon\WebProfiler\View\Fn\MethodExistsFn::execute }
+        - { type: parameter, value: method_exists }
 
 profilerAssets:
   className: Srgiz\Phalcon\WebProfiler\Service\Assets
