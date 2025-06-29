@@ -12,7 +12,6 @@
   "require": {
     "php": ">=8.0",
     "ext-phalcon": "^5.1",
-    "ext-yaml": "*",
     "ext-zip": "*"
   },
   "require-dev": {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
     ->exclude([
-        'config',
         'example/app/var',
     ])
 ;

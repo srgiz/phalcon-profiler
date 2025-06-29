@@ -7,6 +7,7 @@ namespace Srgiz\Phalcon\WebProfiler\Controller;
 use Phalcon\Http\Response;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\Controller;
+use Phalcon\Mvc\Router\Exception as RouterException;
 use Srgiz\Phalcon\WebProfiler\Service\Manager;
 use Srgiz\Phalcon\WebProfiler\View\View;
 
@@ -23,9 +24,14 @@ class ProfilerController extends Controller
     public function tagAction(string $tag): ResponseInterface
     {
         $panel = $this->request->get('panel', null, '');
-        $data = $this->profilerManager->data($tag, $panel);
 
-        return $this->render($data['_templatePath'], $data);
+        try {
+            $data = $this->profilerManager->data($tag, $panel);
+
+            return $this->render($data['_templatePath'], $data);
+        } catch (RouterException $e) {
+            return (new Response())->setStatusCode(422, $e->getMessage());
+        }
     }
 
     public function barAction(string $tag): ResponseInterface

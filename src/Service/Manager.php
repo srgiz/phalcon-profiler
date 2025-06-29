@@ -9,6 +9,7 @@ use Phalcon\Di\AbstractInjectionAware;
 use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Http\RequestInterface;
 use Phalcon\Http\ResponseInterface;
+use Phalcon\Mvc\Router\Exception as RouterException;
 use Phalcon\Mvc\Router\RouteInterface;
 use Srgiz\Phalcon\WebProfiler\Collector\CollectorInterface;
 
@@ -58,12 +59,18 @@ class Manager extends AbstractInjectionAware
                 continue;
             }
 
-            $data[$tag] = (new DataReader($dir.'/'.$tag))->read('_meta');
+            try {
+                $data[$tag] = (new DataReader($dir.'/'.$tag))->read('_meta');
+            } catch (RouterException $e) {
+            }
         }
 
         return $data;
     }
 
+    /**
+     * @throws RouterException
+     */
     public function data(string $tag, string $panel): array
     {
         $collectors = $this->collectors();
@@ -72,7 +79,13 @@ class Manager extends AbstractInjectionAware
         $dir = $this->config()['tagsDir'];
 
         if ('latest' === $tag) {
-            $tag = scandir($dir, SCANDIR_SORT_DESCENDING)[0];
+            $files = glob($dir.'/*');
+            sort($files);
+            $file = array_pop($files);
+
+            if (is_string($file)) {
+                $tag = basename($file);
+            }
         }
 
         $archive = new DataReader($dir.'/'.$tag);

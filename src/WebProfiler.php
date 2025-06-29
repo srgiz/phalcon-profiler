@@ -51,10 +51,30 @@ class WebProfiler implements ServiceProviderInterface
             return $profilerConfig;
         });
 
-        $di->loadFromYaml($profilerDir.'/config/services.yaml', [
-            '!profilerConfig' => function (string $path) use ($profilerConfig) {
-                return $profilerConfig->path($path);
-            },
+        $di->loadFromPhp($profilerDir.'/config/services.php');
+
+        $di->setShared('profilerVolt', [ // need $profilerConfig
+            'className' => 'Srgiz\Phalcon\WebProfiler\View\Volt',
+            'arguments' => [
+                ['type' => 'service', 'name' => 'profilerView'],
+            ],
+            'calls' => [
+                [
+                    'method' => 'setOptions',
+                    'arguments' => [
+                        ['type' => 'parameter', 'value' => [
+                            'path' => $profilerConfig->path('viewsCachePath'),
+                            'autoescape' => true,
+                        ]],
+                    ],
+                ],
+                [
+                    'method' => 'setCompiler',
+                    'arguments' => [
+                        ['type' => 'service', 'name' => 'profilerVoltCompiler'],
+                    ],
+                ],
+            ],
         ]);
 
         if (!$di->getInternalEventsManager()) {
