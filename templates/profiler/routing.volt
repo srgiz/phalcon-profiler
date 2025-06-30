@@ -2,7 +2,6 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">{{ _panel }}</h2>
     <div class="card-shadow mb-4">
         <table class="table table-hover mb-0">
             <thead>

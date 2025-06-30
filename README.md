@@ -37,14 +37,14 @@ eventsManager:
 
 Enable events in services:
 ```yaml
-  dispatcher:
-  db:
-  view:
-  volt:
-    calls:
-      - method: setEventsManager
-        arguments:
-          - { type: service, name: eventsManager }
+dispatcher:
+db:
+view:
+volt:
+  calls:
+    - method: setEventsManager
+      arguments:
+        - { type: service, name: eventsManager }
 ```
 
 ## Profiler config

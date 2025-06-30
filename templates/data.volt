@@ -27,6 +27,7 @@
             {{ partial('@profiler/partials/collectors.nav', ['_tag': _tag, '_panel': _panel, '_meta': _meta]) }}
         </div>
         <div class="col">
+            {% block title %}<h2 class="mb-3">{{ _panel }}</h2>{% endblock %}
             {% block panel %}{% endblock %}
         </div>
     </div>

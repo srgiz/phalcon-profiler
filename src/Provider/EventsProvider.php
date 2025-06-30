@@ -77,6 +77,9 @@ class EventsProvider implements ServiceProviderInterface
             // db
             ['db:beforeQuery', Collector\DatabaseCollector::class],
             ['db:afterQuery', Collector\DatabaseCollector::class],
+            ['db:beginTransaction', Collector\DatabaseCollector::class],
+            ['db:commitTransaction', Collector\DatabaseCollector::class],
+            ['db:rollbackTransaction', Collector\DatabaseCollector::class],
             // logger
             ['profiler:log', Collector\LogsCollector::class],
             // exception

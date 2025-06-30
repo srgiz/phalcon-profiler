@@ -2,7 +2,6 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">Database</h2>
     <div class="row gx-3">
         <div class="col-auto mb-4">
             <div class="card card-shadow">
@@ -43,42 +42,46 @@
             </div>
         </div>
     </div>
-    {% for connId, conn in connections %}
-        <h3 class="mb-3">{{ connId }}. {{ conn['type'] }}</h3>
-        <div class="table-responsive card-shadow mb-4">
-            <table class="table table-hover mb-0">
-                <thead>
-                <tr>
-                    <th scope="col" style="width: 2rem">#</th>
-                    <th scope="col" style="width: 8rem">Time</th>
-                    <th scope="col">Query</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for idx, item in conn['queries'] %}
+    {% if connections is empty %}
+        {{ partial('@profiler/partials/noevents.card', ['title': 'No queries or missing event manager', 'service': 'db']) }}
+    {% else %}
+        {% for connId, conn in connections %}
+            <h3 class="mb-3">{{ connId }}. {{ conn['type'] }}</h3>
+            <div class="table-responsive card-shadow mb-4">
+                <table class="table table-hover mb-0">
+                    <thead>
                     <tr>
-                        <td>{{ idx + 1 }}</td>
-                        <td>{{ '%.3F'|format(item['query'].getTotalElapsedMilliseconds()) }}&nbsp;ms</td>
-                        <td>
-                            {% autoescape false %}
-                                <div><code>{{ item['query'].getSqlStatement()|e }}</code></div>
-                                {% if item['query'].getSqlVariables() is not empty %}
-                                    <div class="mt-2">{{ profiler_dump(item['query'].getSqlVariables()) }}</div>
-                                {% endif %}
-                                <div class="mt-2">
-                                    <a class="text-decoration-none" data-bs-toggle="collapse" href="#collapseBacktrace_{{ connId }}_{{ idx }}" role="button" aria-expanded="false">
-                                        backtrace
-                                    </a>
-                                    <div class="collapse mt-2" id="collapseBacktrace_{{ connId }}_{{ idx }}">
-                                        {{ profiler_dump(item['backtrace']) }}
-                                    </div>
-                                </div>
-                            {% endautoescape %}
-                        </td>
+                        <th scope="col" style="width: 2rem">#</th>
+                        <th scope="col" style="width: 8rem">Time</th>
+                        <th scope="col">Query</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endfor %}
+                    </thead>
+                    <tbody>
+                    {% for idx, item in conn['queries'] %}
+                        <tr>
+                            <td>{{ idx + 1 }}</td>
+                            <td>{{ '%.3F'|format(item['query'].getTotalElapsedMilliseconds()) }}&nbsp;ms</td>
+                            <td>
+                                {% autoescape false %}
+                                    <div><code>{{ item['query'].getSqlStatement()|e }}</code></div>
+                                    {% if item['query'].getSqlVariables() is not empty %}
+                                        <div class="mt-2">{{ profiler_dump(item['query'].getSqlVariables()) }}</div>
+                                    {% endif %}
+                                    <div class="mt-2">
+                                        <a data-bs-toggle="collapse" href="#collapseBacktrace_{{ connId }}_{{ idx }}" role="button" aria-expanded="false">
+                                            backtrace
+                                        </a>
+                                        <div class="collapse mt-2" id="collapseBacktrace_{{ connId }}_{{ idx }}">
+                                            {{ profiler_dump(item['backtrace']) }}
+                                        </div>
+                                    </div>
+                                {% endautoescape %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

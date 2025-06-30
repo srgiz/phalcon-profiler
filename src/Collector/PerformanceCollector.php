@@ -25,7 +25,7 @@ class PerformanceCollector implements CollectorInterface
         return '@profiler/profiler/performance';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/performance.menu';
     }

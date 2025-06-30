@@ -18,28 +18,12 @@ class DatabaseCollector implements CollectorInterface
         $this->weakMap = new \WeakMap();
     }
 
-    public function beforeQuery(EventInterface $event, AdapterInterface $conn): void
-    {
-        $this->profiler->startProfile($conn->getSQLStatement(), $conn->getSQLVariables(), $conn->getSQLBindTypes());
-
-        $this->weakMap[$this->profiler->getLastProfile()] = [
-            'connId' => $conn->getConnectionId(),
-            'type' => $conn->getType(),
-            'backtrace' => array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 3),
-        ];
-    }
-
-    public function afterQuery(EventInterface $event, AdapterInterface $conn): void
-    {
-        $this->profiler->stopProfile();
-    }
-
     public function templatePath(): string
     {
         return '@profiler/profiler/database';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/database.menu';
     }
@@ -76,5 +60,48 @@ class DatabaseCollector implements CollectorInterface
                 'count' => count($queries),
             ],
         ];
+    }
+
+    public function beforeQuery(EventInterface $event, AdapterInterface $conn): void
+    {
+        $this->profiler->startProfile($conn->getSQLStatement(), $conn->getSQLVariables(), $conn->getSQLBindTypes());
+
+        $this->weakMap[$this->profiler->getLastProfile()] = [
+            'connId' => $conn->getConnectionId(),
+            'type' => $conn->getType(),
+            'backtrace' => array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 3),
+        ];
+    }
+
+    public function afterQuery(EventInterface $event, AdapterInterface $conn): void
+    {
+        $this->profiler->stopProfile();
+    }
+
+    public function beginTransaction(EventInterface $event, AdapterInterface $conn): void
+    {
+        $this->profiler->startProfile(sprintf('%1$s', match ($event->getType()) {
+            'beginTransaction' => 'BEGIN',
+            'commitTransaction' => 'COMMIT',
+            default => 'ROLLBACK',
+        }));
+
+        $this->weakMap[$this->profiler->getLastProfile()] = [
+            'connId' => $conn->getConnectionId(),
+            'type' => $conn->getType(),
+            'backtrace' => array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 3),
+        ];
+
+        $this->profiler->stopProfile();
+    }
+
+    public function commitTransaction(EventInterface $event, AdapterInterface $conn): void
+    {
+        $this->beginTransaction($event, $conn);
+    }
+
+    public function rollbackTransaction(EventInterface $event, AdapterInterface $conn): void
+    {
+        $this->beginTransaction($event, $conn);
     }
 }

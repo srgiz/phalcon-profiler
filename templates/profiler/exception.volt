@@ -2,8 +2,8 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">Exception</h2>
     {% if trace is empty %}
+        {#{ partial('@profiler/partials/noevents.card', ['title': 'No exception or missing event manager', 'service': 'dispatcher']) }#}
         <div class="card{# border border-dashed#}">
             <div class="card-body text-center pt-2 pb-2">none</div>
         </div>
@@ -28,7 +28,7 @@
                     <td class="block-break-all">
                         {% if item['function'] is defined %}
                             <code class="text-body">
-                                {% if item['class'] is defined %}<span class="text-info">{{ item['class'] }}</span>::{% endif %}<span class="text-warning">{{ item['function'] }}</span>
+                                {% if item['class'] is defined %}<span class="text-code">{{ item['class'] }}</span>::{% endif %}<span class="text-warning">{{ item['function'] }}</span>
                             </code>
                         {% endif %}
 

@@ -121,6 +121,13 @@ return [
             ['type' => 'service', 'name' => 'router'],
         ],
     ],
+    'Srgiz\Phalcon\WebProfiler\Collector\EventsCollector' => [
+        'className' => 'Srgiz\Phalcon\WebProfiler\Collector\EventsCollector',
+        'shared' => true,
+        'arguments' => [
+            ['type' => 'service', 'name' => 'eventsManager'],
+        ],
+    ],
     'Srgiz\Phalcon\WebProfiler\Collector\VoltCollector' => [
         'className' => 'Srgiz\Phalcon\WebProfiler\Collector\VoltCollector',
         'shared' => true,

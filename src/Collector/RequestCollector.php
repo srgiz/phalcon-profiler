@@ -26,7 +26,7 @@ class RequestCollector implements CollectorInterface
         return '@profiler/profiler/request';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/request.menu';
     }

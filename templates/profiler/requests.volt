@@ -19,7 +19,7 @@
                 <tr class="position-relative">
                     {% set color = item['statusCode'] < 400 ? 'success' : 'danger' %}
                     <td>
-                        <a class="text-decoration-none stretched-link" href="{{ url(['for': '_profiler-tag', 'tag': tag]) }}">{{ tag }}</a>
+                        <a class="stretched-link" href="{{ url(['for': '_profiler-tag', 'tag': tag]) }}">{{ tag }}</a>
                     </td>
                     <td>
                         <span class="badge text-bg-{{ color }} align-text-bottom">{{ item['statusCode'] }}</span>

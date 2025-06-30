@@ -26,7 +26,7 @@ class LogsCollector implements CollectorInterface
         return '@profiler/profiler/logs';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/logs.menu';
     }

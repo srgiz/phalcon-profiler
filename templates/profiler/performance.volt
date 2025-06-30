@@ -2,7 +2,6 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">Performance</h2>
     <div class="row gx-3">
         <div class="col-auto mb-4">
             <div class="card card-shadow">

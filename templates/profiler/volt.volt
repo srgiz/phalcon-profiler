@@ -2,25 +2,22 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">{{ _panel }}</h2>
-    <div class="card-shadow mb-4">
-        <table class="table table-hover mb-0">
-            <thead>
-            <tr>
-                <th scope="col">Active render paths</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if activeRenderPaths is empty %}
+    {% if activeRenderPaths is empty %}
+        {{ partial('@profiler/partials/noevents.card', ['title': 'Volt is not used or event manager is missing', 'service': 'volt']) }}
+    {% else %}
+        <div class="card-shadow mb-4">
+            <table class="table table-hover mb-0">
+                <thead>
                 <tr>
-                    <td>none</td>
+                    <th scope="col">Active render paths</th>
                 </tr>
-            {% else %}
+                </thead>
+                <tbody>
                 {% for idx, item in activeRenderPaths %}
                     <tr>
                         <td>
                             <code class="d-block mb-1">{{ item['path'] }}</code>
-                            <a class="text-decoration-none" data-bs-toggle="collapse" href="#collapseTrace_{{ idx }}" role="button" aria-expanded="false">
+                            <a data-bs-toggle="collapse" href="#collapseTrace_{{ idx }}" role="button" aria-expanded="false">
                                 backtrace
                             </a>
                             <div class="collapse mt-2" id="collapseTrace_{{ idx }}">
@@ -31,8 +28,8 @@
                         </td>
                     </tr>
                 {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}

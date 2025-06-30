@@ -2,8 +2,6 @@
 {% extends '@profiler/data.volt' %}
 
 {% block panel %}
-    <h2 class="mb-3">Logs</h2>
-
     {% if items is empty %}
         <div class="card{# border border-dashed#}">
             <div class="card-body text-center pt-2 pb-2">none</div>
@@ -44,10 +42,10 @@
                                 <td>
                                     {% autoescape false %}
                                         <div class="block-break-all mb-2">{{ item['message'] }}</div>
-                                        <a class="me-2 text-decoration-none" data-bs-toggle="collapse" href="#collapseContext_{{ idx }}" role="button" aria-expanded="false">
+                                        <a class="me-2" data-bs-toggle="collapse" href="#collapseContext_{{ idx }}" role="button" aria-expanded="false">
                                             context
                                         </a>
-                                        <a class="text-decoration-none" data-bs-toggle="collapse" href="#collapseTrace_{{ idx }}" role="button" aria-expanded="false">
+                                        <a data-bs-toggle="collapse" href="#collapseTrace_{{ idx }}" role="button" aria-expanded="false">
                                             backtrace
                                         </a>
                                         <div class="mt-2 collapse" id="collapseContext_{{ idx }}">

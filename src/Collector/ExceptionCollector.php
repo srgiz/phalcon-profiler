@@ -23,7 +23,7 @@ class ExceptionCollector implements CollectorInterface
         return '@profiler/profiler/exception';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/exception.menu';
     }

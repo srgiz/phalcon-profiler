@@ -1,0 +1,6 @@
+example/ export-ignore
+docker/ export-ignore
+.* export-ignore
+screenshot* export-ignore
+docker-compose.yml export-ignore
+psalm.xml export-ignore

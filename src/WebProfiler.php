@@ -43,6 +43,7 @@ class WebProfiler implements ServiceProviderInterface
             Collector\LogsCollector::class,
             Collector\ExceptionCollector::class,
             Collector\DatabaseCollector::class,
+            Collector\EventsCollector::class,
             Collector\RoutingCollector::class,
             Collector\VoltCollector::class,
         ], $collectors);

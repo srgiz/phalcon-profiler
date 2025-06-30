@@ -1,6 +1,7 @@
 {# profiler/request #}
 {% extends '@profiler/data.volt' %}
 
+{% block title %}{% endblock %}
 {% block panel %}
     <div class="row gx-3">
         <div class="col-auto mb-4">

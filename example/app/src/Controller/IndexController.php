@@ -25,7 +25,10 @@ class IndexController extends Controller
         // data
         usleep($usleep = rand(20000, 100000));
 
+        //$this->db->setNestedTransactionsWithSavepoints(true);
+        //$this->db->begin();
         $this->db->query('select version() where 1=:n', ['n' => 1]);
+        //$this->db->commit();
 
         $this->logger->info('usleep: %usleep%', ['usleep' => $usleep, 'action' => 'index']);
         $this->logger->debug('stop', ['action' => 'index']);

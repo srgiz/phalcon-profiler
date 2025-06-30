@@ -22,7 +22,7 @@ class RoutingCollector implements CollectorInterface
         return '@profiler/profiler/routing';
     }
 
-    public function menuPath(): ?string
+    public function menuPath(): string
     {
         return '@profiler/profiler/routing.menu';
     }
