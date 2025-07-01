@@ -59,9 +59,22 @@ class DumpFn
             $color = 'var(--bs-warning)';
         }
 
-        $result = sprintf('<span style="color: %s">%s</span>', $color, htmlspecialchars((string) $str));
+        $quotes = is_string($str) || $str instanceof \Stringable;
 
-        return is_string($str) ? sprintf('"%s"', $result) : $result;
+        try {
+            $toStr = (string) $str;
+        } catch (\Throwable $e) {
+            if ($str instanceof \DateTimeInterface) {
+                $toStr = sprintf('%s "%s"', get_class($str), $str->format('c'));
+            } else {
+                $toStr = is_object($str) ? get_class($str) : gettype($str);
+                $color = 'var(--bs-warning)';
+            }
+        }
+
+        $result = sprintf('<span style="color: %s">%s</span>', $color, htmlspecialchars($toStr));
+
+        return $quotes ? sprintf('"%s"', $result) : $result;
     }
 
     private function dumpKey(mixed $key): string

@@ -30,10 +30,10 @@
       "rm -rf example/app/var/cache/volt/*.php"
     ],
     "cs-fixer": [
-      "vendor/bin/php-cs-fixer fix"
+      "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix"
     ],
     "dry-cs-fixer": [
-      "vendor/bin/php-cs-fixer fix --dry-run --diff"
+      "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --dry-run --diff"
     ],
     "psalm": [
       "vendor/bin/psalm --no-cache"

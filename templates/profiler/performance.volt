@@ -44,7 +44,7 @@
     </div>
     <div class="mb-4">
         <div class="card card-shadow">
-            <div class="card-body position-relative" style="height: {{ (data['datasets']|length + 2) * 40 }}px">
+            <div class="card-body position-relative" style="height: {{ (data['datasets']|length + 2) * 40 }}px; width: {#fix flex#}calc(100% - 1px)">
                 <canvas id="performance"></canvas>
             </div>
         </div>

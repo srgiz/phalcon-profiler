@@ -1,4 +1,5 @@
-FROM php:8.0.29-fpm-alpine3.16
+ARG PHP_IMAGE=8.0.29-fpm-alpine3.16
+FROM php:$PHP_IMAGE
 
 RUN apk add --no-cache bash shadow linux-headers
 
@@ -22,12 +23,16 @@ RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
         zip \
         pdo_pgsql \
     && pecl channel-update pecl.php.net \
-    && pecl install yaml-2.2.3 \
+    && pecl install yaml-2.2.4 \
     && pecl install xdebug-$XDEBUG_VERSION \
     && docker-php-ext-enable \
         yaml \
         xdebug \
     && apk del .phpize-deps
+
+# https://github.com/phalcon/cphalcon/issues/16680#issuecomment-2779809115
+# https://github.com/phalcon/docker/issues/4#issuecomment-2780032550
+ENV CFLAGS="-Wno-error=incompatible-pointer-types"
 
 ARG PHALCON_VERSION=5.1.4
 RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \

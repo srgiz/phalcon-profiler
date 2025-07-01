@@ -16,10 +16,11 @@ services:
   php:
     container_name: profiler-php
     restart: unless-stopped
-    image: srgiz/phalcon-profiler-${PHALCON_VERSION}:latest
+    image: srgiz/phalcon-profiler:php${PHP_IMAGE}-phalcon${PHALCON_VERSION}
     build:
       context: docker/php
       args:
+        PHP_IMAGE: ${PHP_IMAGE}
         PHALCON_VERSION: ${PHALCON_VERSION}
     environment:
       PS1: "\\u:\\w$$ "

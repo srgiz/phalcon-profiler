@@ -21,6 +21,9 @@ class DataWriter
 
     public function __destruct()
     {
-        $this->archive->close();
+        try {
+            $this->archive->close();
+        } catch (\Throwable $e) {
+        }
     }
 }
