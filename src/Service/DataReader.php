@@ -8,7 +8,7 @@ use Phalcon\Mvc\Router\Exception as RouterException;
 
 class DataReader
 {
-    private \ZipArchive $archive;
+    private string $filename;
 
     /**
      * @throws RouterException
@@ -19,8 +19,7 @@ class DataReader
             throw new RouterException(sprintf('File "%s" not found', $filename));
         }
 
-        $this->archive = new \ZipArchive();
-        $this->archive->open($filename, \ZipArchive::RDONLY);
+        $this->filename = $filename;
     }
 
     /**
@@ -28,24 +27,29 @@ class DataReader
      */
     public function read(string $name): array
     {
-        try {
-            $value = $this->archive->getFromName($name);
-        } catch (\ValueError $e) {
-            throw new RouterException($e->getMessage());
-        }
+        $reader = new \XMLReader();
 
-        if (false === $value) {
+        try {
+            $reader->open($this->filename);
+
+            while ($reader->read()) {
+                if ($reader->localName === $name) {
+                    $data = base64_decode($reader->readInnerXml());
+
+                    if (function_exists('gzdecode')) {
+                        /** @psalm-suppress RiskyTruthyFalsyComparison */
+                        $data = @gzdecode($data) ?: $data;
+                    }
+
+                    return unserialize($data);
+                }
+            }
+
             return [];
-        }
-
-        return unserialize($value);
-    }
-
-    public function __destruct()
-    {
-        try {
-            $this->archive->close();
         } catch (\Throwable $e) {
+            throw new RouterException($e->getMessage());
+        } finally {
+            $reader->close();
         }
     }
 }

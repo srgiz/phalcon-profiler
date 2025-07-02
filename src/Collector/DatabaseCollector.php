@@ -80,11 +80,11 @@ class DatabaseCollector implements CollectorInterface
 
     public function beginTransaction(EventInterface $event, AdapterInterface $conn): void
     {
-        $this->profiler->startProfile(sprintf('%1$s', match ($event->getType()) {
+        $this->profiler->startProfile(match ($event->getType()) {
             'beginTransaction' => 'BEGIN',
             'commitTransaction' => 'COMMIT',
             default => 'ROLLBACK',
-        }));
+        });
 
         $this->weakMap[$this->profiler->getLastProfile()] = [
             'connId' => $conn->getConnectionId(),

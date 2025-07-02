@@ -43,7 +43,7 @@ class Manager extends AbstractInjectionAware
     public function bar(string $tag): array
     {
         return [
-            '_meta' => (new DataReader($this->config()['tagsDir'].'/'.$tag))->read('_meta'),
+            '_meta' => (new DataReader($this->config()['tagsDir'].'/'.$tag.'.xml'))->read('_meta'),
             '_tag' => $tag,
         ];
     }
@@ -51,16 +51,14 @@ class Manager extends AbstractInjectionAware
     public function requests(): array
     {
         $dir = $this->config()['tagsDir'];
-        $files = scandir($dir, SCANDIR_SORT_DESCENDING);
+        $files = glob($dir.'/*.xml');
+        rsort($files);
         $data = [];
 
-        foreach ($files as $tag) {
-            if (in_array($tag, ['.', '..', '.gitignore'])) {
-                continue;
-            }
-
+        foreach ($files as $file) {
             try {
-                $data[$tag] = (new DataReader($dir.'/'.$tag))->read('_meta');
+                $tag = basename($file, '.xml');
+                $data[$tag] = (new DataReader($file))->read('_meta');
             } catch (RouterException $e) {
             }
         }
@@ -79,16 +77,16 @@ class Manager extends AbstractInjectionAware
         $dir = $this->config()['tagsDir'];
 
         if ('latest' === $tag) {
-            $files = glob($dir.'/*');
+            $files = glob($dir.'/*.xml');
             sort($files);
             $file = array_pop($files);
 
             if (is_string($file)) {
-                $tag = basename($file);
+                $tag = basename($file, '.xml');
             }
         }
 
-        $archive = new DataReader($dir.'/'.$tag);
+        $archive = new DataReader($dir.'/'.$tag.'.xml');
 
         return array_merge($archive->read($panel), [
             '_meta' => $archive->read('_meta'),
@@ -106,7 +104,7 @@ class Manager extends AbstractInjectionAware
             mkdir($dir, 0755, true);
         }
 
-        $archive = new DataWriter($dir.'/'.$tag);
+        $archive = new DataWriter($dir.'/'.$tag.'.xml');
         $metaCollectors = [];
 
         foreach ($this->collectors() as $collector) {

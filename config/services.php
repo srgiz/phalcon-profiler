@@ -50,7 +50,7 @@ return [
         ],
     ],
     'profilerDump' => [
-        'className' => '\Phalcon\Support\Debug\Dump',
+        'className' => 'Phalcon\Support\Debug\Dump',
         'shared' => true,
         'arguments' => [
             ['type' => 'parameter', 'value' => [
@@ -74,7 +74,7 @@ return [
         'shared' => true,
     ],
     'profilerDb' => [
-        'className' => '\Phalcon\Db\Profiler',
+        'className' => 'Phalcon\Db\Profiler',
         'shared' => true,
     ],
     'profilerLoggerAdapter' => [

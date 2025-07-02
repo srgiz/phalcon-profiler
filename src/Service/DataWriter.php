@@ -6,23 +6,26 @@ namespace Srgiz\Phalcon\WebProfiler\Service;
 
 class DataWriter
 {
-    private \ZipArchive $archive;
+    /** @var resource */
+    private $xml;
 
     public function __construct(string $filename)
     {
-        $this->archive = new \ZipArchive();
-        $this->archive->open($filename, \ZipArchive::CREATE);
+        $this->xml = fopen($filename, 'w');
+        fwrite($this->xml, '<?xml version="1.0" encoding="UTF-8"?><profiler>');
     }
 
     public function add(string $name, array $data): void
     {
-        $this->archive->addFromString($name, serialize($data), \ZipArchive::FL_OVERWRITE | \ZipArchive::FL_ENC_UTF_8);
+        fwrite($this->xml, sprintf('<%1$s>%2$s</%1$s>', $name, base64_encode(
+            (fn (string $serialize) => function_exists('gzencode') ? gzencode($serialize, 3) : $serialize)(serialize($data))
+        )));
     }
 
     public function __destruct()
     {
         try {
-            $this->archive->close();
+            fwrite($this->xml, '</profiler>');
         } catch (\Throwable $e) {
         }
     }

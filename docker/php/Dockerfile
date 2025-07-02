@@ -13,14 +13,11 @@ RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
         yaml-dev \
         # intl:
         icu-dev \
-        # zip:
-        libzip-dev \
         # pgsql:
         libpq-dev \
     && docker-php-ext-install \
         opcache \
         intl \
-        zip \
         pdo_pgsql \
     && pecl channel-update pecl.php.net \
     && pecl install yaml-2.2.4 \
