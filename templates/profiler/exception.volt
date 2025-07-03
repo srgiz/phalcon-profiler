@@ -28,7 +28,7 @@
                     <td class="block-break-all">
                         {% if item['function'] is defined %}
                             <code class="text-body">
-                                {% if item['class'] is defined %}<span class="text-code">{{ item['class'] }}</span>::{% endif %}<span class="text-warning">{{ item['function'] }}</span>
+                                {% if item['class'] is defined %}<span class="text-code">{{ item['class'] }}</span>::{% endif %}<span class="text-warning-emphasis">{{ item['function'] }}</span>
                             </code>
                         {% endif %}
 

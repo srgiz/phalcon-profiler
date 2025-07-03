@@ -50,8 +50,9 @@ class Manager extends AbstractInjectionAware
 
     public function requests(): array
     {
-        $dir = $this->config()['tagsDir'];
-        $files = glob($dir.'/*.xml');
+        $this->removeExpired(null);
+
+        $files = glob($this->config()['tagsDir'].'/*.xml');
         rsort($files);
         $data = [];
 
@@ -85,6 +86,8 @@ class Manager extends AbstractInjectionAware
                 $tag = basename($file, '.xml');
             }
         }
+
+        $this->removeExpired($tag);
 
         $archive = new DataReader($dir.'/'.$tag.'.xml');
 
@@ -134,5 +137,26 @@ class Manager extends AbstractInjectionAware
             'route' => !$route ? null : sprintf('%s [%s]', $route->getName(), $route->getRouteId()),
             'collectors' => $metaCollectors,
         ]);
+    }
+
+    private function removeExpired(?string $currentTag): void
+    {
+        try {
+            $interval = new \DateInterval($this->config()['storageDateInterval']);
+        } catch (\Throwable $e) {
+            return;
+        }
+
+        $files = glob($this->config()['tagsDir'].'/*.xml');
+        $mt = (float) (new \DateTimeImmutable())->sub($interval)->format('U.u');
+        $minBasename = sprintf('%8x%05x', floor($mt), ($mt - floor($mt)) * 1000000);
+
+        foreach ($files as $file) {
+            $basename = basename($file, '.xml');
+
+            if ($currentTag !== $basename && strnatcmp($minBasename, $basename) > 0) {
+                @unlink($file);
+            }
+        }
     }
 }

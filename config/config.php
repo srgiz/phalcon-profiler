@@ -9,6 +9,7 @@ return new Config([
     'tagsDir' => '/var/www/var/profiler',
     'routePrefix' => '/_profiler',
     'collectors' => [],
+    'storageDateInterval' => 'P2D',
     'excludeRoutes' => [
         '/favicon.ico',
         '/.well-known/appspecific/com.chrome.devtools.json',
