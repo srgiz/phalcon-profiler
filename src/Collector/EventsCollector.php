@@ -29,8 +29,6 @@ class EventsCollector implements CollectorInterface
 
     public function collect(): array
     {
-        $listeners = [];
-
         try {
             $reflection = new \ReflectionClass($this->eventsManager);
             $property = $reflection->getProperty('events');
@@ -41,9 +39,14 @@ class EventsCollector implements CollectorInterface
 
             /** @var array<string, \SplPriorityQueue> $events */
             $events = $property->getValue($this->eventsManager);
+
+            /** @psalm-suppress UndefinedInterfaceMethod */
+            $arePrioritiesEnabled = $this->eventsManager->arePrioritiesEnabled();
         } catch (\Throwable $e) {
             return [];
         }
+
+        $listeners = [];
 
         foreach ($events as $eventName => $eventQueue) {
             $queue = clone $eventQueue;
@@ -75,6 +78,9 @@ class EventsCollector implements CollectorInterface
             return strnatcmp($p2[1] ?? '', $p1[1] ?? '');
         });
 
-        return ['listeners' => $listeners];
+        return [
+            'listeners' => $listeners,
+            'meta' => ['arePrioritiesEnabled' => $arePrioritiesEnabled],
+        ];
     }
 }

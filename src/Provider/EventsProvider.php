@@ -57,9 +57,6 @@ class EventsProvider implements ServiceProviderInterface
         $eventsManager = $data['instance'];
 
         $events = [
-            // profiler
-            ['view:beforeRender', $this, 1024],
-            ['application:beforeSendResponse', $this, -1024],
             // request
             ['application:beforeSendResponse',  Collector\RequestCollector::class, 1024],
             // performance
@@ -70,12 +67,12 @@ class EventsProvider implements ServiceProviderInterface
             ['dispatch:afterBinding', Collector\PerformanceCollector::class, 1024],
             ['dispatch:beforeExecuteRoute', Collector\PerformanceCollector::class, 1024],
             ['dispatch:afterExecuteRoute', Collector\PerformanceCollector::class, 1024],
-            ['db:beforeQuery', Collector\PerformanceCollector::class, 2048],
+            ['db:beforeQuery', Collector\PerformanceCollector::class, 1024],
             ['db:afterQuery', Collector\PerformanceCollector::class, 2048],
             ['view:beforeCompile', Collector\PerformanceCollector::class, 1024],
             ['view:afterCompile', Collector\PerformanceCollector::class, 2048],
             // db
-            ['db:beforeQuery', Collector\DatabaseCollector::class, 1024],
+            ['db:beforeQuery', Collector\DatabaseCollector::class, 2048],
             ['db:afterQuery', Collector\DatabaseCollector::class, 1024],
             ['db:beginTransaction', Collector\DatabaseCollector::class, 1024],
             ['db:commitTransaction', Collector\DatabaseCollector::class, 1024],
@@ -86,6 +83,9 @@ class EventsProvider implements ServiceProviderInterface
             ['dispatch:beforeException', Collector\ExceptionCollector::class, 1024],
             // view
             ['view:afterCompile', Collector\VoltCollector::class, 1024],
+            // profiler
+            ['view:beforeRender', $this, 1024],
+            ['application:beforeSendResponse', $this, -1024],
         ];
 
         foreach ($events as $event) {

@@ -33,7 +33,7 @@ class DataReader
             $reader->open($this->filename);
 
             while ($reader->read()) {
-                if ($reader->localName === $name) {
+                if (\XMLReader::ELEMENT === $reader->nodeType && 'item' === $reader->localName && $reader->getAttribute('name') === $name) {
                     $data = base64_decode($reader->readInnerXml());
 
                     if (function_exists('gzdecode')) {

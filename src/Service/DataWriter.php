@@ -17,7 +17,7 @@ class DataWriter
 
     public function add(string $name, array $data): void
     {
-        fwrite($this->xml, sprintf('<%1$s>%2$s</%1$s>', $name, base64_encode(
+        fwrite($this->xml, sprintf('<item name="%1$s">%2$s</item>', htmlspecialchars($name), base64_encode(
             (fn (string $serialize) => function_exists('gzencode') ? gzencode($serialize, 3) : $serialize)(serialize($data))
         )));
     }

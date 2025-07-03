@@ -51,12 +51,12 @@ class DumpFn
 
     private function dumpString(mixed $str): string
     {
-        $color = 'var(--bs-teal)';
+        $color = 'var(--bs-success-text-emphasis)';
 
         if (is_int($str) || is_float($str)) {
-            $color = 'var(--bs-info)';
+            $color = 'var(--bs-info-text-emphasis)';
         } elseif (is_bool($str) || is_null($str)) {
-            $color = 'var(--bs-warning)';
+            $color = 'var(--bs-warning-text-emphasis)';
         }
 
         $quotes = is_string($str) || $str instanceof \Stringable;
@@ -68,7 +68,7 @@ class DumpFn
                 $toStr = sprintf('%s "%s"', get_class($str), $str->format('c'));
             } else {
                 $toStr = is_object($str) ? get_class($str) : gettype($str);
-                $color = 'var(--bs-warning)';
+                $color = 'var(--bs-warning-text-emphasis)';
             }
         }
 
