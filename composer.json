@@ -17,17 +17,24 @@
   "require-dev": {
     "phalcon/ide-stubs": "v5.1.4",
     "vimeo/psalm": "^5.13",
-    "friendsofphp/php-cs-fixer": "^3.75"
+    "friendsofphp/php-cs-fixer": "^3.75",
+    "phpunit/phpunit": "^9.6"
   },
   "autoload": {
     "psr-4": {
       "Srgiz\\Phalcon\\WebProfiler\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Srgiz\\Phalcon\\WebProfiler\\Tests\\": "tests/unit/"
+    }
+  },
   "minimum-stability": "dev",
   "scripts": {
     "example-clear-cache": [
-      "rm -rf example/app/var/cache/volt/*.php"
+      "rm -rf example/app/var/cache/volt/*.php",
+      "rm -rf example/micro/var/cache/volt/*.php"
     ],
     "cs-fixer": [
       "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix"
@@ -38,10 +45,18 @@
     "psalm": [
       "vendor/bin/psalm --no-cache"
     ],
+    "test": [
+      "rm -rf tests/files/.phpunit.cache",
+      "rm -rf tests/files/cache.volt",
+      "rm -rf .phpunit.result.cache",
+      "XDEBUG_MODE=coverage vendor/bin/phpunit --testdox --coverage-html tests/files/.phpunit.cache/coverage",
+      "php tests/badge/gen.php"
+    ],
     "quality": [
       "@example-clear-cache",
       "@cs-fixer",
-      "@psalm"
+      "@psalm",
+      "@test"
     ]
   }
 }

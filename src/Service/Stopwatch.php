@@ -59,4 +59,13 @@ class Stopwatch
     {
         return $this->stack['completed'] ?? [];
     }
+
+    /**
+     * @internal
+     */
+    public function reset(): void
+    {
+        $this->origin = $this->final = $this->now(0);
+        $this->stack = [];
+    }
 }

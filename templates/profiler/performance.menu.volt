@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block badge %}
-    {% if meta['max'] is defined and meta['max'] >= 1 %}
+    {% if meta['max'] is defined and meta['max'] > 0 %}
         <span class="badge badge-small bg-{{ meta['max'] > 300 ? 'warning' : 'success' }}-subtle text-{{ meta['max'] > 300 ? 'warning' : 'success' }} ms-3">{{ '%.0F'|format(meta['max']) }}&nbsp;ms</span>
     {% endif %}
 {% endblock %}

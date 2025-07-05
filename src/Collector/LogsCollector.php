@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Collector;
 
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Events\EventInterface;
 use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
@@ -11,6 +12,14 @@ use Phalcon\Logger\Item;
 class LogsCollector implements CollectorInterface
 {
     private array $logs = [];
+
+    // app | micro
+    public function boot(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->logs = [];
+
+        return true;
+    }
 
     public function log(EventInterface $event, AdapterInterface $adapter, Item $item): void
     {

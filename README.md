@@ -1,5 +1,9 @@
 # Phalcon profiler
 
+Supports micro and classic app.
+
+![coverage](tests/badge/coverage.svg)
+
 `composer require --dev srgiz/phalcon-profiler`
 
 * PHP >= 8.0
@@ -11,6 +15,8 @@
 
 Di:
 ```php
+# Phalcon\Mvc\Application
+
 use Phalcon\Di\DiInterface;
 use Phalcon\Mvc\Application;
 use Srgiz\Phalcon\WebProfiler\WebProfiler;
@@ -20,8 +26,23 @@ if ('dev' === $env) {
     $di->register(new WebProfiler());
 }
 
-/** @var Application $application */
+$application = new Application($di);
 $application->setEventsManager($di->getShared('eventsManager'));
+```
+```php
+# Phalcon\Mvc\Micro
+
+use Phalcon\Di\DiInterface;
+use Phalcon\Mvc\Micro;
+use Srgiz\Phalcon\WebProfiler\WebProfiler;
+
+/** @var DiInterface $di */
+if ('dev' === $env) {
+    $di->register(new WebProfiler());
+}
+
+$app = new Micro($di);
+$app->setEventsManager($di->getShared('eventsManager'));
 ```
 
 Configure eventsManager:
@@ -55,11 +76,10 @@ return [
     'profiler' => [
         'viewsCachePath' => '/var/www/var/cache/volt/',
         'tagsDir' => '/var/www/var/profiler',
-        'routePrefix' => '/_profiler',
-        'collectors' => [
-            /** @see \Srgiz\Phalcon\WebProfiler\Collector\CollectorInterface */
-            CustomCollector::class,
-        ],
+        //'routePrefix' => '/_profiler',
+        //'collectors' => [ /** @see \Srgiz\Phalcon\WebProfiler\Collector\CollectorInterface */
+        //    CustomCollector::class,
+        //],
     ],
 ];
 ```

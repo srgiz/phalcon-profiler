@@ -55,10 +55,21 @@ class EventsCollector implements CollectorInterface
 
             while ($queue->valid()) {
                 $current = $queue->current();
+                $source = is_object($current['data']) ? get_class($current['data']) : 'callable';
+                $method = null;
+
+                if (is_array($current['data'])) {
+                    try {
+                        $source = is_object($current['data'][0]) ? get_class($current['data'][0]) : $current['data'][0];
+                        $method = $current['data'][1];
+                    } catch (\Throwable $e) {
+                    }
+                }
 
                 $listeners[$eventName][] = [
                     'priority' => $current['priority'],
-                    'type' => is_object($current['data']) ? get_class($current['data']) : (is_callable($current['data']) ? 'callable' : gettype($current['data'])),
+                    'source' => $source,
+                    'method' => $method,
                 ];
 
                 $queue->next();

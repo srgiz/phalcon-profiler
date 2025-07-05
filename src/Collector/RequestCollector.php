@@ -15,10 +15,32 @@ class RequestCollector implements CollectorInterface
 
     private ?ResponseInterface $response = null;
 
-    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ResponseInterface $response): void
+    // app
+    public function boot(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->request = null;
+        $this->response = null;
+
+        return true;
+    }
+
+    // app
+    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ?ResponseInterface $response): void
     {
         $this->request = $app->getDI()->getShared('request');
         $this->response = $response;
+    }
+
+    // micro
+    public function beforeHandleRoute(EventInterface $event, InjectionAwareInterface $app): void
+    {
+        $this->beforeSendResponse($event, $app, null);
+    }
+
+    // micro
+    public function afterHandleRoute(EventInterface $event, InjectionAwareInterface $app, mixed $returnedValue): void
+    {
+        $this->beforeSendResponse($event, $app, $returnedValue instanceof ResponseInterface ? $returnedValue : null);
     }
 
     public function templatePath(): string

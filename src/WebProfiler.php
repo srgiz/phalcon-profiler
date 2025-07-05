@@ -9,6 +9,8 @@ use Phalcon\Di\Di;
 use Phalcon\Di\DiInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Events\Manager;
+use Phalcon\Html\Escaper;
+use Phalcon\Mvc\Url;
 
 class WebProfiler implements ServiceProviderInterface
 {
@@ -19,7 +21,7 @@ class WebProfiler implements ServiceProviderInterface
          * @var ConfigInterface $profilerConfig
          */
         $profilerDir = dirname(__DIR__);
-        $profilerConfig = require_once $profilerDir.'/config/config.php';
+        $profilerConfig = require $profilerDir.'/config/config.php';
         $appConfig = $di->getShared('config')['profiler'] ?? [];
         $collectors = [];
 
@@ -78,11 +80,23 @@ class WebProfiler implements ServiceProviderInterface
             ],
         ]);
 
+        if (!$di->has('escaper')) {
+            $di->setShared('escaper', [
+                'className' => Escaper::class,
+            ]);
+        }
+
+        if (!$di->has('url')) {
+            $di->setShared('url', [
+                'className' => Url::class,
+            ]);
+        }
+
         if (!$di->getInternalEventsManager()) {
             $di->setInternalEventsManager(new Manager());
         }
 
         (new Provider\RouterProvider($profilerConfig['routePrefix']))->register($di);
-        (new Provider\EventsProvider())->setExcludeRoutes($profilerConfig['excludeRoutes']->toArray())->register($di);
+        (new Provider\EventsProvider($profilerConfig['excludeRoutes']->toArray()))->register($di);
     }
 }

@@ -68,12 +68,21 @@ volt:
           value:
             path: !config application.viewsCachePath
 
+stderrLoggerAdapter:
+  className: Phalcon\Logger\Adapter\Stream
+  arguments:
+    - { type: parameter, value: php://stderr }
+
 logger:
   className: Phalcon\Logger\Logger
   shared: true
   arguments:
     - { type: parameter, value: main }
   calls:
+    - method: addAdapter
+      arguments:
+        - { type: parameter, value: stderr }
+        - { type: service, name: stderrLoggerAdapter }
     - method: addAdapter
       arguments:
         - { type: parameter, value: profiler }
@@ -83,11 +92,7 @@ db:
   className: Phalcon\Db\Adapter\Pdo\Postgresql
   arguments:
     - type: parameter
-      value:
-        host: postgres
-        username: postgres
-        password: root
-        dbname: postgres
+      value: !config database
   calls:
     - method: setEventsManager
       arguments:

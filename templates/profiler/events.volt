@@ -27,7 +27,17 @@
             <thead>
             <tr>
                 <th scope="col">Priority</th>
-                <th scope="col">Listener</th>
+                <th scope="col">
+                    <div class="d-flex justify-content-between">
+                        <span>Listener</span>
+                        {% if listeners is defined %}
+                            <label class="text-muted small" role="button">
+                                <input class="form-check-input form-check-input-no-bg me-1" type="checkbox" data-bs-target=".multi-collapse" data-bs-toggle="collapse" aria-expanded="true" checked>
+                                Show profiler events
+                            </label>
+                        {% endif %}
+                    </div>
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -37,16 +47,24 @@
                 </tr>
             {% else %}
                 {% for event, eventListeners in listeners %}
-                    <tr>
+                    {% set rowCollapse = true %}
+                    {% for data in eventListeners %}
+                        {% if !str_starts_with(data['source'], 'Srgiz\Phalcon\WebProfiler\\') %}
+                            {% set rowCollapse = false %}
+                        {% endif %}
+                    {% endfor %}
+                    <tr class="collapse show transition-none{{ rowCollapse ? ' multi-collapse' : '' }}">
                         <th colspan="2">
                             <code style="color: initial">{{ event }}</code>
                         </th>
                     </tr>
                     {% for data in eventListeners %}
-                        <tr>
+                        <tr class="collapse show transition-none{{ str_starts_with(data['source'], 'Srgiz\Phalcon\WebProfiler\\') ? ' multi-collapse' : '' }}">
                             <td>{{ data['priority'] }}</td>
                             <td>
-                                <code>{{ data['type'] }}</code>
+                                <code class="text-body">
+                                    <span class="text-code">{{ data['source'] }}</span>{% if data['method'] is not empty %}::<span class="text-warning-emphasis">{{ data['method'] }}</span>{% endif %}
+                                </code>
                             </td>
                         </tr>
                     {% endfor %}

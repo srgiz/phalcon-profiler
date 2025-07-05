@@ -10,6 +10,7 @@ use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Events\EventInterface;
 use Phalcon\Events\Manager;
+use Phalcon\Http\Response;
 use Phalcon\Http\ResponseInterface;
 use Phalcon\Mvc\RouterInterface;
 use Phalcon\Mvc\ViewBaseInterface;
@@ -24,9 +25,7 @@ class EventsProvider implements ServiceProviderInterface
 
     private bool $isResolved = false;
 
-    private array $excludeRoutes = [];
-
-    public function __construct()
+    public function __construct(private array $excludeRoutes)
     {
         $this->requestTime = new \DateTimeImmutable();
         $this->profilerTag = uniqid();
@@ -36,13 +35,6 @@ class EventsProvider implements ServiceProviderInterface
     {
         /** @var Di $di */
         $di->getInternalEventsManager()->attach('di:afterServiceResolve', $this);
-    }
-
-    public function setExcludeRoutes(array $routes): self
-    {
-        $this->excludeRoutes = $routes;
-
-        return $this;
     }
 
     public function afterServiceResolve(EventInterface $event, DiInterface $di, array $data): void
@@ -58,39 +50,67 @@ class EventsProvider implements ServiceProviderInterface
 
         $events = [
             // request
+            ['application:boot', Collector\RequestCollector::class, 1536], // clear
             ['application:beforeSendResponse',  Collector\RequestCollector::class, 1024],
+            ['micro:beforeHandleRoute',  Collector\RequestCollector::class, 1280],
+            ['micro:afterHandleRoute',  Collector\RequestCollector::class, 1024],
             // performance
             ['application:beforeSendResponse', Collector\PerformanceCollector::class, 2048],
+            ['micro:afterHandleRoute', Collector\PerformanceCollector::class, 2048],
+            ['micro:beforeException', Collector\PerformanceCollector::class, 2048],
             ['application:boot', Collector\PerformanceCollector::class, 1024],
             ['application:beforeHandleRequest', Collector\PerformanceCollector::class, 1024],
             ['dispatch:beforeDispatch', Collector\PerformanceCollector::class, 1024],
             ['dispatch:afterBinding', Collector\PerformanceCollector::class, 1024],
             ['dispatch:beforeExecuteRoute', Collector\PerformanceCollector::class, 1024],
             ['dispatch:afterExecuteRoute', Collector\PerformanceCollector::class, 1024],
+            ['micro:beforeHandleRoute', Collector\PerformanceCollector::class, 1024],
+            ['micro:beforeExecuteRoute', [Collector\PerformanceCollector::class, 'microAfterRequest'], 2048],
+            ['micro:beforeExecuteRoute', Collector\PerformanceCollector::class, 1024],
+            ['micro:afterExecuteRoute', Collector\PerformanceCollector::class, 1024],
+            ['micro:beforeNotFound', Collector\PerformanceCollector::class, 1024], // alt microAfterRequest
             ['db:beforeQuery', Collector\PerformanceCollector::class, 1024],
             ['db:afterQuery', Collector\PerformanceCollector::class, 2048],
             ['view:beforeCompile', Collector\PerformanceCollector::class, 1024],
             ['view:afterCompile', Collector\PerformanceCollector::class, 2048],
             // db
+            ['application:boot', Collector\DatabaseCollector::class, 1536], // clear
+            ['micro:beforeHandleRoute', [Collector\DatabaseCollector::class, 'boot'], 1536], // clear
             ['db:beforeQuery', Collector\DatabaseCollector::class, 2048],
             ['db:afterQuery', Collector\DatabaseCollector::class, 1024],
             ['db:beginTransaction', Collector\DatabaseCollector::class, 1024],
             ['db:commitTransaction', Collector\DatabaseCollector::class, 1024],
             ['db:rollbackTransaction', Collector\DatabaseCollector::class, 1024],
             // logger
-            ['profiler:log', Collector\LogsCollector::class],
+            ['application:boot', Collector\LogsCollector::class, 1536], // clear
+            ['micro:beforeHandleRoute', [Collector\LogsCollector::class, 'boot'], 1536], // clear
+            ['profiler:log', Collector\LogsCollector::class, 1024],
             // exception
+            ['application:boot', Collector\ExceptionCollector::class, 1536], // clear
             ['dispatch:beforeException', Collector\ExceptionCollector::class, 1024],
+            ['micro:beforeHandleRoute', [Collector\ExceptionCollector::class, 'boot'], 1536], // clear
+            ['micro:beforeException', Collector\ExceptionCollector::class, 1024],
             // view
+            ['application:boot', Collector\VoltCollector::class, 1536], // clear
+            ['micro:beforeHandleRoute', [Collector\VoltCollector::class, 'boot'], 1536], // clear
             ['view:afterCompile', Collector\VoltCollector::class, 1024],
             // profiler
             ['view:beforeRender', $this, 1024],
             ['application:beforeSendResponse', $this, -1024],
+            ['micro:afterHandleRoute', $this, -1024],
+            ['micro:beforeException', $this, -1024], // alt afterHandleRoute
         ];
 
         foreach ($events as $event) {
-            [$name, $obj] = $event;
-            $eventsManager->attach($name, is_object($obj) ? $obj : $di->getShared($obj), $event[2] ?? Manager::DEFAULT_PRIORITY);
+            [$name, $handler, $priority] = $event;
+
+            if (is_string($handler)) {
+                $handler = $di->getShared($handler);
+            } elseif (is_array($handler)) {
+                $handler = [$di->getShared($handler[0]), $handler[1]];
+            }
+
+            $eventsManager->attach($name, $handler, $priority);
         }
     }
 
@@ -101,7 +121,8 @@ class EventsProvider implements ServiceProviderInterface
         return true;
     }
 
-    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ResponseInterface $response): void
+    // app
+    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ?ResponseInterface $response): void
     {
         /** @var RouterInterface $router */
         $router = $app->getDI()->getShared('router');
@@ -113,14 +134,26 @@ class EventsProvider implements ServiceProviderInterface
             return;
         }
 
-        $response->setHeader('X-Profiler-Tag', $this->profilerTag);
+        $response?->setHeader('X-Profiler-Tag', $this->profilerTag);
 
         try {
             /** @var Profiler $profiler */
             $profiler = $app->getDI()->getShared('profilerManager');
-            $profiler->save($this->profilerTag, $this->requestTime, $app, $response);
+            $profiler->save($this->profilerTag, $this->requestTime, $app, $response ?: null);
         } catch (\Throwable $e) {
-            $response->setHeader('X-Profiler-Error', $e->getMessage());
+            $response?->setHeader('X-Profiler-Error', $e->getMessage());
         }
+    }
+
+    // micro
+    public function afterHandleRoute(EventInterface $event, InjectionAwareInterface $app, mixed $returnedValue): void
+    {
+        $this->beforeSendResponse($event, $app, $returnedValue instanceof ResponseInterface ? $returnedValue : null);
+    }
+
+    // micro
+    public function beforeException(EventInterface $event, InjectionAwareInterface $app, \Throwable $e): void
+    {
+        $this->beforeSendResponse($event, $app, new Response(null, 500));
     }
 }

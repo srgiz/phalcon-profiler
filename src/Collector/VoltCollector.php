@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Collector;
 
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Events\EventInterface;
 use Phalcon\Mvc\View\Engine\AbstractEngine;
 
 class VoltCollector implements CollectorInterface
 {
-    private array $data = [
-        'activeRenderPaths' => [],
-    ];
+    private array $data = [];
+
+    // app | micro
+    public function boot(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->data = [];
+
+        return true;
+    }
 
     public function afterCompile(EventInterface $event, AbstractEngine $engine): bool
     {

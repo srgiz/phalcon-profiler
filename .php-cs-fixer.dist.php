@@ -6,6 +6,8 @@ $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
     ->exclude([
         'example/app/var',
+        'example/micro/var',
+        'tests/files',
     ])
 ;
 

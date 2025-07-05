@@ -60,18 +60,34 @@ class PerformanceCollector implements CollectorInterface
         ];
     }
 
-    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ResponseInterface $response): void
+    // app
+    public function beforeSendResponse(EventInterface $event, InjectionAwareInterface $app, ?ResponseInterface $response): void
     {
         $this->maxScale = $this->stopwatch->final(true);
     }
 
+    // micro
+    public function afterHandleRoute(EventInterface $event, InjectionAwareInterface $app, mixed $returnedValue): void
+    {
+        $this->beforeSendResponse($event, $app, null);
+    }
+
+    // micro
+    public function beforeException(EventInterface $event, InjectionAwareInterface $app, \Throwable $e): void
+    {
+        $this->beforeSendResponse($event, $app, null);
+    }
+
+    // app
     public function boot(EventInterface $event, InjectionAwareInterface $app): bool
     {
+        $this->stopwatch->reset();
         $this->stopwatch->start('request'); // before router
 
         return true;
     }
 
+    // app
     public function beforeHandleRequest(EventInterface $event, InjectionAwareInterface $app): bool
     {
         $this->stopwatch->stop('request'); // after router
@@ -79,6 +95,32 @@ class PerformanceCollector implements CollectorInterface
         return true;
     }
 
+    // micro
+    public function beforeHandleRoute(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->stopwatch->reset();
+        $this->stopwatch->start('request'); // before router
+
+        return true;
+    }
+
+    // micro
+    public function microAfterRequest(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->stopwatch->stop('request'); // after router
+
+        return true;
+    }
+
+    // micro
+    public function beforeNotFound(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->stopwatch->stop('request'); // after router
+
+        return true;
+    }
+
+    // app
     public function beforeDispatch(EventInterface $event, DispatcherInterface $dispatcher): bool
     {
         $this->stopwatch->start('request'); // before dispatch
@@ -86,6 +128,7 @@ class PerformanceCollector implements CollectorInterface
         return true;
     }
 
+    // app
     public function afterBinding(EventInterface $event, DispatcherInterface $dispatcher): bool
     {
         $this->stopwatch->stop('request'); // after dispatch
@@ -93,14 +136,16 @@ class PerformanceCollector implements CollectorInterface
         return true;
     }
 
-    public function beforeExecuteRoute(EventInterface $event, DispatcherInterface $dispatcher): bool
+    // app | micro
+    public function beforeExecuteRoute(EventInterface $event, InjectionAwareInterface $di): bool
     {
         $this->stopwatch->start('controller');
 
         return true;
     }
 
-    public function afterExecuteRoute(EventInterface $event, DispatcherInterface $dispatcher): bool
+    // app | micro
+    public function afterExecuteRoute(EventInterface $event, InjectionAwareInterface $di): bool
     {
         $this->stopwatch->stop('controller');
 

@@ -48,7 +48,7 @@ class ProfilerController extends Controller
         /** @var View $view */
         $view = $this->getDI()->getShared('profilerView');
 
-        return new Response($view->render($view->preparePath($path), $params));
+        return new Response($view->render($view->preparePath($path), $params), 200);
     }
 
     public function phpinfoAction(): ResponseInterface
@@ -56,6 +56,6 @@ class ProfilerController extends Controller
         ob_start();
         phpinfo();
 
-        return new Response(ob_get_clean());
+        return new Response(ob_get_clean(), 200);
     }
 }

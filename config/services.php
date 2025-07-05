@@ -40,13 +40,27 @@ return [
                     ['type' => 'parameter', 'value' => 'method_exists'],
                 ],
             ],
+            [
+                'method' => 'addFunction',
+                'arguments' => [
+                    ['type' => 'parameter', 'value' => 'str_starts_with'],
+                    ['type' => 'parameter', 'value' => 'str_starts_with'],
+                ],
+            ],
+        ],
+    ],
+    'profilerTag' => [
+        'className' => 'Phalcon\Html\TagFactory',
+        'shared' => true,
+        'arguments' => [
+            ['type' => 'service', 'name' => 'escaper'],
         ],
     ],
     'profilerAssets' => [
         'className' => 'Srgiz\Phalcon\WebProfiler\Service\Assets',
         'shared' => true,
         'arguments' => [
-            ['type' => 'service', 'name' => 'tag'],
+            ['type' => 'service', 'name' => 'profilerTag'],
         ],
     ],
     'profilerDump' => [
@@ -86,6 +100,10 @@ return [
     ],
     'profilerManager' => [
         'className' => 'Srgiz\Phalcon\WebProfiler\Service\Manager',
+        'shared' => true,
+    ],
+    'Srgiz\Phalcon\WebProfiler\Controller\ProfilerController' => [
+        'className' => 'Srgiz\Phalcon\WebProfiler\Controller\ProfilerController',
         'shared' => true,
     ],
     'Srgiz\Phalcon\WebProfiler\Collector\RequestCollector' => [

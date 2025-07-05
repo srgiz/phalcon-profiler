@@ -6,6 +6,7 @@ namespace Srgiz\Phalcon\WebProfiler\Collector;
 
 use Phalcon\Db\Adapter\AdapterInterface;
 use Phalcon\Db\Profiler;
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Events\EventInterface;
 
 class DatabaseCollector implements CollectorInterface
@@ -60,6 +61,14 @@ class DatabaseCollector implements CollectorInterface
                 'count' => count($queries),
             ],
         ];
+    }
+
+    // app | micro
+    public function boot(EventInterface $event, InjectionAwareInterface $app): bool
+    {
+        $this->profiler->reset();
+
+        return true;
     }
 
     public function beforeQuery(EventInterface $event, AdapterInterface $conn): void

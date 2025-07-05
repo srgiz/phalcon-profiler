@@ -20,11 +20,7 @@ class Manager extends AbstractInjectionAware
      */
     public function collectors(): array
     {
-        static $collectors = [];
-
-        if ($collectors) {
-            return $collectors;
-        }
+        $collectors = [];
 
         foreach ($this->config()['collectors'] as $name) {
             /** @var CollectorInterface $collector */
@@ -99,7 +95,7 @@ class Manager extends AbstractInjectionAware
         ]);
     }
 
-    public function save(string $tag, \DateTimeInterface $requestTime, InjectionAwareInterface $app, ResponseInterface $response): void
+    public function save(string $tag, \DateTimeInterface $requestTime, InjectionAwareInterface $app, ?ResponseInterface $response): void
     {
         $dir = $this->config()['tagsDir'];
 
@@ -130,7 +126,7 @@ class Manager extends AbstractInjectionAware
         $archive->add('_meta', [
             'method' => $request->getMethod(),
             'uri' => $request->getURI(),
-            'statusCode' => $response->getStatusCode() ?? 200,
+            'statusCode' => $response?->getStatusCode() ?? 200,
             'requestTime' => $requestTime,
             'executionTime' => $stopwatch->final(false),
             'peakMemoryUsage' => memory_get_peak_usage(true) / 1024 / 1024,

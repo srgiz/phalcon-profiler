@@ -27,6 +27,7 @@
     --bs-secondary-color: #878a99;
     --bs-info-text-emphasis: #09a9d5;
     --bs-info-bg-subtle: #daf7fe;
+    --form-check-input-no-bg: var(--bs-secondary-color);
 }
 
 [data-bs-theme=dark] {
@@ -47,6 +48,7 @@
     --bs-secondary-bg-subtle: #313437;
     --bs-info-bg-subtle: rgba(10, 199, 251, 0.15);
     --bs-info-text-emphasis: #3bd2fc;
+    --form-check-input-no-bg: var(--bs-body-bg);
 }
 
 a {
@@ -226,6 +228,15 @@ a {
 .dropdown-item.active, .dropdown-item:active {
     color: rgb(var(--bs-primary-rgb));
     background-color: var(--bs-primary-bg-subtle);
+}
+
+.transition-none {
+    transition: none !important;
+}
+
+.form-check-input.form-check-input-no-bg:checked {
+    background-color: var(--form-check-input-no-bg);
+    border-color: var(--bs-border-color);
 }
 /*
 :root {

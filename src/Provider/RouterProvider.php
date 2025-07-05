@@ -10,13 +10,39 @@ use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Di\ServiceProviderInterface;
 use Phalcon\Dispatcher\DispatcherInterface;
 use Phalcon\Events\EventInterface;
+use Phalcon\Events\Manager;
+use Phalcon\Mvc\Micro;
 use Phalcon\Mvc\RouterInterface;
 use Srgiz\Phalcon\WebProfiler\Controller\ProfilerController;
 use Srgiz\Phalcon\WebProfiler\Route;
 
 class RouterProvider implements ServiceProviderInterface
 {
-    private bool $isResolved = false;
+    private bool $isResolvedRouter = false;
+    private bool $isResolvedEvents = false;
+
+    private array $routes = [
+        '_profiler' => [
+            'controller' => ProfilerController::class,
+            'action' => 'indexAction',
+            'pattern' => '',
+        ],
+        '_profiler-tag' => [
+            'controller' => ProfilerController::class,
+            'action' => 'tagAction',
+            'pattern' => '/tag/{tag}',
+        ],
+        '_profiler-bar' => [
+            'controller' => ProfilerController::class,
+            'action' => 'barAction',
+            'pattern' => '/bar/{tag}',
+        ],
+        '_profiler-phpinfo' => [
+            'controller' => ProfilerController::class,
+            'action' => 'phpinfoAction',
+            'pattern' => '/phpinfo',
+        ],
+    ];
 
     public function __construct(private string $routePrefix)
     {
@@ -30,36 +56,59 @@ class RouterProvider implements ServiceProviderInterface
 
     public function afterServiceResolve(EventInterface $event, DiInterface $di, array $data): void
     {
-        if ($this->isResolved || 'router' !== $data['name']) {
+        $this->afterResolveEvents($event, $di, $data);
+        $this->afterResolveRouter($event, $di, $data);
+    }
+
+    public function afterResolveEvents(EventInterface $event, DiInterface $di, array $data): void
+    {
+        if ($this->isResolvedEvents || 'eventsManager' !== $data['name']) {
             return;
         }
 
-        $this->isResolved = true;
+        $this->isResolvedEvents = true;
+
+        /** @var Manager $eventsManager */
+        $eventsManager = $data['instance'];
+        $eventsManager->attach('micro:beforeHandleRoute', $this, 2048);
+    }
+
+    public function beforeHandleRoute(EventInterface $event, Micro $app): bool
+    {
+        if ($app->getRouter()->getRouteByName('_profiler')) {
+            return true;
+        }
+
+        $collection = new Micro\Collection();
+        $collection->setHandler($app->getSharedService(ProfilerController::class));
+
+        foreach ($this->routes as $name => $route) {
+            $collection->get($this->routePrefix.$route['pattern'], $route['action'], $name);
+        }
+
+        $app->mount($collection);
+
+        return true;
+    }
+
+    public function afterResolveRouter(EventInterface $event, DiInterface $di, array $data): void
+    {
+        if ($this->isResolvedRouter || 'router' !== $data['name']) {
+            return;
+        }
+
+        $this->isResolvedRouter = true;
 
         /** @var RouterInterface $router */
         $router = $data['instance'];
 
-        $routes = [
-            (new Route($this->routePrefix, [
-                'controller' => ProfilerController::class,
-                'action' => 'indexAction',
-            ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler'),
-            (new Route($this->routePrefix.'/tag/{tag}', [
-                'controller' => ProfilerController::class,
-                'action' => 'tagAction',
-            ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-tag'),
-            (new Route($this->routePrefix.'/bar/{tag}', [
-                'controller' => ProfilerController::class,
-                'action' => 'barAction',
-            ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-bar'),
-            (new Route($this->routePrefix.'/phpinfo', [
-                'controller' => ProfilerController::class,
-                'action' => 'phpinfoAction',
-            ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName('_profiler-phpinfo'),
-        ];
-
-        foreach ($routes as $route) {
-            $router->attach($route);
+        foreach ($this->routes as $name => $route) {
+            $router->attach(
+                (new Route($this->routePrefix.$route['pattern'], [
+                    'controller' => $route['controller'],
+                    'action' => $route['action'],
+                ], 'GET'))->beforeMatch($this->beforeMatchRoute())->setName($name)
+            );
         }
     }
 

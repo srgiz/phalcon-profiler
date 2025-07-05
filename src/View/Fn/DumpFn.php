@@ -62,7 +62,11 @@ class DumpFn
         $quotes = is_string($str) || $str instanceof \Stringable;
 
         try {
-            $toStr = (string) $str;
+            $toStr = match (true) {
+                is_null($str) => 'null',
+                is_bool($str) => $str ? 'true' : 'false',
+                default => (string) $str,
+            };
         } catch (\Throwable $e) {
             if ($str instanceof \DateTimeInterface) {
                 $toStr = sprintf('%s "%s"', get_class($str), $str->format('c'));

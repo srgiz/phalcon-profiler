@@ -34,11 +34,14 @@
             <directory name="vendor" />
             <directory name="example/app/config" />
             <directory name="example/app/var" />
+            <directory name="example/micro/config" />
+            <directory name="example/micro/var" />
+            <directory name="tests/files" />
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
         <PossiblyInvalidMethodCall errorLevel="suppress" />
-        <MissingClosureReturnType errorLevel="suppress" />
+        <DuplicateClass errorLevel="suppress" />
         <UndefinedInterfaceMethod>
             <errorLevel type="suppress">
                 <referencedMethod name="Phalcon\Config\ConfigInterface::offsetGet" />

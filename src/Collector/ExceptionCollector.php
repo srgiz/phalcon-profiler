@@ -4,16 +4,25 @@ declare(strict_types=1);
 
 namespace Srgiz\Phalcon\WebProfiler\Collector;
 
-use Phalcon\Dispatcher\DispatcherInterface;
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\Events\EventInterface;
 
 class ExceptionCollector implements CollectorInterface
 {
     private ?\Throwable $exception = null;
 
-    public function beforeException(EventInterface $event, DispatcherInterface $dispatcher, \Throwable $exception): bool
+    // app | micro
+    public function boot(EventInterface $event, InjectionAwareInterface $app): bool
     {
-        $this->exception = $exception;
+        $this->exception = null;
+
+        return true;
+    }
+
+    // app | micro
+    public function beforeException(EventInterface $event, InjectionAwareInterface $di, \Throwable $e): bool
+    {
+        $this->exception = $e;
 
         return true;
     }
