@@ -154,7 +154,7 @@ class Manager extends AbstractInjectionAware
         foreach ($files as $file) {
             $basename = basename($file, '.xml');
 
-            if ($currentTag !== $basename && strnatcmp($minBasename, $basename) > 0) {
+            if ($currentTag !== $basename && strcmp($minBasename, $basename) > 0) {
                 @unlink($file);
             }
         }
